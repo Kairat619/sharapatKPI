@@ -19,16 +19,14 @@ import {
 } from "./utils";
 import {
   ShieldCheck,
-  HelpCircle,
-  AlertCircle,
-  Database,
+  Globe,
   Lock,
   ArrowRight,
-  TrendingUp,
-  Award,
 } from "lucide-react";
+import { useLanguage, languages } from "./i18n/LanguageContext";
 
 export default function App() {
+  const { t, lang, setLang } = useLanguage();
   const [currentTab, setCurrentTab] = useState<string>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true); // Logged in by default in Simulator mode
@@ -97,7 +95,7 @@ export default function App() {
     if (!urlToUse) return;
     setSyncState({
       status: "syncing",
-      message: "Fetching rows from active Google Sheet...",
+      message: t("app.fetchingReports"),
     });
     try {
       const response = await fetch(`${urlToUse}?action=getReports`, {
@@ -148,12 +146,12 @@ export default function App() {
         localStorage.setItem("sharapat_v2_reports", JSON.stringify(mapped));
         setSyncState({
           status: "success",
-          message: `Connected! Loaded ${mapped.length} reports successfully from your sheet.`,
+          message: t("app.connected", { count: mapped.length }),
         });
       } else if (data && data.error) {
         throw new Error(data.error);
       } else {
-        throw new Error("Invalid or empty sheet structure returned.");
+        throw new Error(t("app.invalidSheet"));
       }
 
       // Fetch accompanying KPI targets configurations
@@ -183,7 +181,7 @@ export default function App() {
       console.warn("Failed syncing with Sheets. Running with local cache", err);
       setSyncState({
         status: "error",
-        message: `Offline/Local Cache Mode: ${err.message || "CORS or spreadsheet restriction"}`,
+        message: t("app.offlineCache", { error: err.message || "CORS or spreadsheet restriction" }),
       });
     }
   };
@@ -199,15 +197,13 @@ export default function App() {
   const handleSaveReport = async (newReport: DailyReport) => {
     // Check role restrictions
     if (user.role === "Viewer") {
-      alert(
-        "Role Permission Violation: Your account has 'Viewer' scope permission only. Submitting daily reports is locked.",
-      );
+      alert(t("app.viewerRestricted"));
       return;
     }
 
     setSyncState({
       status: "syncing",
-      message: "Saving and posting report row to Google Sheets...",
+      message: t("app.savingReport"),
     });
 
     // Instantly append locally first
@@ -251,7 +247,7 @@ export default function App() {
 
           setSyncState({
             status: "success",
-            message: "Report posted and synchronized with Google Sheets!",
+            message: t("app.syncSuccess"),
           });
         } else if (result && result.error) {
           throw new Error(result.error);
@@ -265,11 +261,11 @@ export default function App() {
         );
         setSyncState({
           status: "error",
-          message: `Posted locally only (CORS or offline): ${err.message || "check authorization"}`,
+          message: t("app.localOnly", { error: err.message || "check authorization" }),
         });
       }
     } else {
-      setSyncState({ status: "idle", message: "Stored safely in local cache" });
+      setSyncState({ status: "idle", message: t("app.localCache") });
     }
 
     setCurrentTab("dashboard"); // return to dashboard view
@@ -282,7 +278,7 @@ export default function App() {
     if (sheetUrl) {
       setSyncState({
         status: "syncing",
-        message: "Synchronizing targets on Google Sheet...",
+        message: t("app.syncingTargets"),
       });
       try {
         const response = await fetch(sheetUrl, {
@@ -299,7 +295,7 @@ export default function App() {
           if (res && res.success) {
             setSyncState({
               status: "success",
-              message: "KPI Benchmarks written on Google Sheets!",
+              message: t("app.targetsSynced"),
             });
           } else {
             throw new Error(res.error || "sheet returned error status");
@@ -310,7 +306,7 @@ export default function App() {
       } catch (e: any) {
         setSyncState({
           status: "error",
-          message: `Targets locally saved (could not write to Sheet): ${e.message || "offline"}`,
+          message: t("app.targetsLocal", { error: e.message || "offline" }),
         });
       }
     }
@@ -351,14 +347,13 @@ export default function App() {
           <div className="w-full max-w-sm bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl space-y-5 text-center animate-fade-in">
             <div>
               <span className="text-[9px] bg-indigo-500/10 text-indigo-300 font-bold tracking-widest px-3 py-1 rounded-full uppercase border border-indigo-500/20">
-                V2 Google Sheets Secured Portal
+                {t("auth.badge")}
               </span>
               <h1 className="text-2xl font-black text-white tracking-tight mt-4 font-display">
-                Sharapat SMM Platform
+                {t("auth.title")}
               </h1>
               <p className="text-xs text-slate-400 mt-2">
-                Select a Google account role below to authenticate and sync live
-                dashboards.
+                {t("auth.subtitle")}
               </p>
             </div>
 
@@ -369,10 +364,10 @@ export default function App() {
               >
                 <div>
                   <span className="block text-xs font-bold text-slate-200">
-                    wkz777@gmail.com
+                    {t("auth.emailAdmin")}
                   </span>
                   <span className="text-[9px] text-indigo-400 font-mono">
-                    Sign in as Admin (Full Control)
+                    {t("auth.signInAdmin")}
                   </span>
                 </div>
                 <ArrowRight
@@ -387,10 +382,10 @@ export default function App() {
               >
                 <div>
                   <span className="block text-xs font-bold text-slate-200">
-                    manager@sharapat.kz
+                    {t("auth.emailManager")}
                   </span>
                   <span className="text-[9px] text-indigo-400 font-mono">
-                    Sign in as Manager (Analytics & Reports)
+                    {t("auth.signInManager")}
                   </span>
                 </div>
                 <ArrowRight
@@ -405,10 +400,10 @@ export default function App() {
               >
                 <div>
                   <span className="block text-xs font-bold text-slate-200">
-                    staff.smm@gmail.com
+                    {t("auth.emailStaff")}
                   </span>
                   <span className="text-[9px] text-indigo-400 font-mono">
-                    Sign in as SMM Staff (Create logs)
+                    {t("auth.signInStaff")}
                   </span>
                 </div>
                 <ArrowRight
@@ -419,7 +414,7 @@ export default function App() {
             </div>
 
             <div className="border-t border-slate-800 pt-4 text-[9px] text-slate-500 leading-relaxed font-mono flex items-center justify-center gap-1">
-              <Lock size={9} /> Fully compliant with Google Apps Script OAuth.
+              <Lock size={9} /> {t("auth.footer")}
             </div>
           </div>
         </div>
@@ -445,26 +440,43 @@ export default function App() {
                 <div className="w-8 md:hidden"></div>
                 <div className="flex items-center gap-2">
                   <span className="text-[10px] bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded font-mono border border-indigo-100 uppercase tracking-widest font-bold">
-                    ● LIVE UPDATES
+                    {t("header.liveUpdates")}
                   </span>
                   <span className="text-xs text-slate-350 hidden sm:inline">
                     |
                   </span>
                   <span className="text-xs text-slate-600 font-bold truncate hidden sm:inline">
-                    Work Account:{" "}
+                    {t("header.workAccount")}{" "}
                     <strong className="text-slate-900 font-extrabold">
                       {user.name}
                     </strong>{" "}
-                    ({user.role})
+                    ({t(`role.${user.role}`)})
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center gap-4 text-xs font-semibold">
+                {/* Language Switcher */}
+                <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-lg p-1 shadow-sm">
+                  {languages.map((l) => (
+                    <button
+                      key={l.code}
+                      onClick={() => setLang(l.code)}
+                      className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition cursor-pointer ${
+                        lang === l.code
+                          ? "bg-indigo-600 text-white shadow-xs"
+                          : "text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+                      }`}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+
                 <div className="bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 border border-indigo-100 rounded-lg p-2 font-bold text-indigo-700 flex items-center gap-1.5 transition">
                   <ShieldCheck size={14} className="text-indigo-600" />
                   <span className="text-[10px] uppercase tracking-wider hidden md:inline">
-                    Permissions Audit: OK
+                    {t("header.permissionsOk")}
                   </span>
                 </div>
               </div>

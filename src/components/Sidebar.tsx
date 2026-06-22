@@ -11,6 +11,7 @@ import {
   BookOpen
 } from 'lucide-react';
 import { UserSession } from '../types';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface SidebarProps {
   currentTab: string;
@@ -29,13 +30,14 @@ export default function Sidebar({
   setIsOpen,
   onLogout 
 }: SidebarProps) {
+  const { t } = useLanguage();
   const tabs = [
-    { id: 'dashboard', name: 'Dashboard', icon: LayoutDashboard, roles: ['Admin', 'Manager', 'Staff', 'Viewer'] },
-    { id: 'daily-report', name: 'Daily Report', icon: FileSpreadsheet, roles: ['Admin', 'Manager', 'Staff'] },
-    { id: 'account-analytics', name: 'Account Analytics', icon: TrendingUp, roles: ['Admin', 'Manager', 'Staff', 'Viewer'] },
-    { id: 'leaderboard', name: 'Employee Leaderboard', icon: Award, roles: ['Admin', 'Manager', 'Staff', 'Viewer'] },
-    { id: 'revenue', name: 'Revenue Analytics', icon: Wallet, roles: ['Admin', 'Manager'] },
-    { id: 'export-settings', name: 'Export & Settings', icon: Settings, roles: ['Admin', 'Manager', 'Staff', 'Viewer'] },
+    { id: 'dashboard', name: t('nav.dashboard'), icon: LayoutDashboard, roles: ['Admin', 'Manager', 'Staff', 'Viewer'] },
+    { id: 'daily-report', name: t('nav.dailyReport'), icon: FileSpreadsheet, roles: ['Admin', 'Manager', 'Staff'] },
+    { id: 'account-analytics', name: t('nav.accountAnalytics'), icon: TrendingUp, roles: ['Admin', 'Manager', 'Staff', 'Viewer'] },
+    { id: 'leaderboard', name: t('nav.leaderboard'), icon: Award, roles: ['Admin', 'Manager', 'Staff', 'Viewer'] },
+    { id: 'revenue', name: t('nav.revenue'), icon: Wallet, roles: ['Admin', 'Manager'] },
+    { id: 'export-settings', name: t('nav.exportSettings'), icon: Settings, roles: ['Admin', 'Manager', 'Staff', 'Viewer'] },
   ];
 
   const visibleTabs = tabs.filter(tab => tab.roles.includes(user.role));
@@ -72,8 +74,8 @@ export default function Sidebar({
           <div className="p-5 flex items-center gap-3 bg-slate-900 text-white">
             <div className="w-8 h-8 bg-indigo-500 rounded-lg flex items-center justify-center font-bold text-white font-display text-base">S</div>
             <div>
-              <span className="font-bold tracking-tight text-base font-display block leading-tight">Sharapat KPI v2</span>
-              <span className="text-[9px] font-mono text-slate-450 block uppercase tracking-wider">Metrics Engine</span>
+              <span className="font-bold tracking-tight text-base font-display block leading-tight">{t("nav.brand")}</span>
+              <span className="text-[9px] font-mono text-slate-450 block uppercase tracking-wider">{t("nav.subtitle")}</span>
             </div>
           </div>
 
@@ -88,7 +90,7 @@ export default function Sidebar({
                   <h4 className="text-xs font-bold truncate text-slate-800">{user.name}</h4>
                   <div className="flex items-center gap-1 mt-0.5">
                     <span className="px-1.5 py-0.5 text-[9px] font-bold font-mono rounded bg-indigo-50 text-indigo-700 border border-indigo-100">
-                      {user.role}
+                      {t(`role.${user.role}`)}
                     </span>
                     <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shrink-0"></span>
                   </div>
@@ -133,10 +135,10 @@ export default function Sidebar({
             className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 rounded-lg text-xs font-bold border border-slate-200/60 transition"
             id="sidebar-signout-btn"
           >
-            <span>Switch / Sign Out</span>
+            <span>{t("nav.switchSignOut")}</span>
           </button>
           <div className="mt-2.5 text-center">
-            <p className="text-[9px] font-mono text-slate-400">v2.1.0 • Client-Persisted Mode</p>
+            <p className="text-[9px] font-mono text-slate-400">{t("nav.version")}</p>
           </div>
         </div>
       </aside>

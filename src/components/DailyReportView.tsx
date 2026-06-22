@@ -1,4 +1,5 @@
 import { useState, useEffect, FormEvent } from 'react';
+import { useLanguage } from "../i18n/LanguageContext";
 import { 
   FileSpreadsheet, 
   Trash2, 
@@ -34,6 +35,7 @@ export default function DailyReportView({
   assignments,
   currentUser
 }: DailyReportViewProps) {
+  const { t } = useLanguage();
   const formatCompact = (val: number) => {
     if (val >= 1000000) return `${(val / 1000000).toFixed(1)}M`;
     if (val >= 1000) return `${(val / 1000).toFixed(1)}K`;
@@ -135,7 +137,7 @@ export default function DailyReportView({
 
   // Clear Form handler
   const handleClear = () => {
-    if (window.confirm("Are you sure you want to clear all inputs of the current form?")) {
+    if (window.confirm(t("dr.clearConfirm"))) {
       setReach(0);
       setViews(0);
       setLikes(0);
@@ -161,11 +163,11 @@ export default function DailyReportView({
   // Duplicate Yesterday's Data (Loads the last submitted report as baseline)
   const handleDuplicateYesterday = () => {
     if (!lastReport) {
-      alert("No prior report entry exists to duplicate. Please complete and save a report manually first.");
+      alert(t("dr.noPriorReport"));
       return;
     }
     
-    if (window.confirm(`Load the baseline parameters of the last report for [${lastReport.account}] on ${lastReport.date}?`)) {
+    if (window.confirm(t("dr.loadLastConfirm", { account: lastReport.account, date: lastReport.date }))) {
       setPlatform(lastReport.platform);
       setAccount(lastReport.account);
       setReach(lastReport.reach);
@@ -224,7 +226,7 @@ export default function DailyReportView({
     
     // Validation
     if (!account) {
-      alert("Please select a target Account channel.");
+      alert(t("dr.selectAccountAlert"));
       return;
     }
 
@@ -268,10 +270,10 @@ export default function DailyReportView({
       {/* Title block */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
         <div>
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-650">Secure Entry Gate</span>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight mt-0.5 font-display">Daily Report Submission</h2>
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-650">{t("dr.badge")}</span>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight mt-0.5 font-display">{t("dr.title")}</h2>
           <p className="text-xs text-slate-500">
-            Submit campaign logs here. Real-time KPI and ROI metrics calculated automatically.
+            {t("dr.desc")}
           </p>
         </div>
         
@@ -284,7 +286,7 @@ export default function DailyReportView({
               id="btn-duplicate-yesterday"
             >
               <Copy size={12} />
-              <span>Copy Last Report</span>
+              <span>{t("dr.copyLast")}</span>
             </button>
           )}
 
@@ -295,7 +297,7 @@ export default function DailyReportView({
             id="btn-clear-form"
           >
             <Trash2 size={12} />
-            <span>Reset Form</span>
+            <span>{t("dr.resetForm")}</span>
           </button>
         </div>
       </div>
@@ -304,9 +306,9 @@ export default function DailyReportView({
         <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl flex items-center gap-2.5 animate-fade-in shadow-sm font-sans">
           <Sparkles className="text-emerald-500 flex-shrink-0" size={16} />
           <div>
-            <h4 className="font-bold text-xs text-slate-900">Report Saved Nicely</h4>
+            <h4 className="font-bold text-xs text-slate-900">{t("dr.savedTitle")}</h4>
             <p className="text-[11px] text-emerald-700 mt-0.5">
-              The entry has been persist-saved and factored into the executive scorecard statistics. Real-time stats are live!
+              {t("dr.savedDesc")}
             </p>
           </div>
         </div>
@@ -320,11 +322,11 @@ export default function DailyReportView({
           
           {/* Card 1: Channel Meta */}
           <div className="bg-white p-4 rounded-xl border border-slate-205 shadow-sm space-y-3">
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-display border-b border-slate-100 pb-1.5">1. Channel & Staff Assignment</h3>
+            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-display border-b border-slate-100 pb-1.5">{t("dr.sectionChannel")}</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Entry Date</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.entryDate")}</label>
                 <input 
                   type="date"
                   required
@@ -335,20 +337,20 @@ export default function DailyReportView({
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Platform Hub</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.platform")}</label>
                 <select
                   required
                   value={platform}
                   onChange={(e) => setPlatform(e.target.value as 'Instagram' | 'TikTok')}
                   className="w-full text-xs p-2 rounded-lg border border-slate-205 bg-white focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-100"
                 >
-                  <option value="Instagram">Instagram</option>
-                  <option value="TikTok">TikTok</option>
+                  <option value="Instagram">{t("dr.instagram")}</option>
+                  <option value="TikTok">{t("dr.tiktok")}</option>
                 </select>
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Account Target Channel</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.accountChannel")}</label>
                 <select
                   required
                   value={account}
@@ -360,7 +362,7 @@ export default function DailyReportView({
                   ))}
                 </select>
                 <p className="text-[9px] text-indigo-600 mt-1 font-bold flex items-center gap-1">
-                  <AlertCircle size={10} /> Smart-fills associated staff members below from assignment settings table.
+                  <AlertCircle size={10} /> {t("dr.staffHint")}
                 </p>
               </div>
             </div>
@@ -368,27 +370,27 @@ export default function DailyReportView({
             {/* Auto-filled Staff View */}
             <div className="p-3 bg-slate-50 border border-slate-200/60 rounded-xl grid grid-cols-3 gap-2">
               <div>
-                <span className="block text-[9px] text-slate-400 uppercase tracking-wider font-bold">Marketer</span>
-                <span className="text-xs font-extrabold text-slate-700">{marketer || 'Not assigned'}</span>
+                <span className="block text-[9px] text-slate-400 uppercase tracking-wider font-bold">{t("dr.marketer")}</span>
+                <span className="text-xs font-extrabold text-slate-700">{marketer || t("dr.notAssigned")}</span>
               </div>
               <div>
-                <span className="block text-[9px] text-slate-400 uppercase tracking-wider font-bold">SMM Specialist</span>
-                <span className="text-xs font-extrabold text-slate-700">{smm || 'Not assigned'}</span>
+                <span className="block text-[9px] text-slate-400 uppercase tracking-wider font-bold">{t("dr.smm")}</span>
+                <span className="text-xs font-extrabold text-slate-700">{smm || t("dr.notAssigned")}</span>
               </div>
               <div>
-                <span className="block text-[9px] text-slate-400 uppercase tracking-wider font-bold">Videographer</span>
-                <span className="text-xs font-extrabold text-slate-700">{videographer || 'Not assigned'}</span>
+                <span className="block text-[9px] text-slate-400 uppercase tracking-wider font-bold">{t("dr.videographer")}</span>
+                <span className="text-xs font-extrabold text-slate-700">{videographer || t("dr.notAssigned")}</span>
               </div>
             </div>
           </div>
 
           {/* Card 2: Marketing & Audience Reach */}
           <div className="bg-white p-4 rounded-xl border border-slate-205 shadow-sm space-y-3">
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-display border-b border-slate-100 pb-1.5">2. Growth & Audience Action</h3>
+            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-display border-b border-slate-100 pb-1.5">{t("dr.sectionGrowth")}</h3>
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Reach Vol</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.reach")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -401,7 +403,7 @@ export default function DailyReportView({
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Views Count</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.views")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -414,7 +416,7 @@ export default function DailyReportView({
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Leads Inbound</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.leads")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -427,7 +429,7 @@ export default function DailyReportView({
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Saves</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.saves")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -440,7 +442,7 @@ export default function DailyReportView({
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Likes</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.likes")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -453,7 +455,7 @@ export default function DailyReportView({
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Comments</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.comments")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -469,11 +471,11 @@ export default function DailyReportView({
 
           {/* Card 3: Volumes Produced */}
           <div className="bg-white p-4 rounded-xl border border-slate-205 shadow-sm space-y-3">
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-display border-b border-slate-100 pb-1.5">3. Content Outputs & Followers</h3>
+            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-display border-b border-slate-100 pb-1.5">{t("dr.sectionContent")}</h3>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Stories Count</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.stories")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -486,7 +488,7 @@ export default function DailyReportView({
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Posts Count</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.posts")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -499,7 +501,7 @@ export default function DailyReportView({
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Reels Count</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.reels")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -512,19 +514,19 @@ export default function DailyReportView({
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Posting Time</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.postingTime")}</label>
                 <input 
                   type="text"
                   required
                   value={postingTime}
                   onChange={(e) => setPostingTime(e.target.value)}
                   className="w-full text-xs p-2 rounded-lg border border-slate-205 focus:outline-none focus:border-indigo-500 focus:ring-1"
-                  placeholder="15:00"
+                  placeholder={t("dr.postingTimePlaceholder")}
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Followers (Start of Day)</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.followersStart")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -532,12 +534,12 @@ export default function DailyReportView({
                   value={followersStart || ''}
                   onChange={(e) => setFollowersStart(Math.max(0, Number(e.target.value)))}
                   className="w-full text-xs p-2 rounded-lg border border-slate-205 focus:outline-none focus:border-indigo-500 focus:ring-1"
-                  placeholder="Starting follower base"
+                  placeholder={t("dr.followersStartPlaceholder")}
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Followers (End of Day)</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.followersEnd")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -545,7 +547,7 @@ export default function DailyReportView({
                   value={followersEnd || ''}
                   onChange={(e) => setFollowersEnd(Math.max(0, Number(e.target.value)))}
                   className="w-full text-xs p-2 rounded-lg border border-slate-205 focus:outline-none focus:border-indigo-500 focus:ring-1"
-                  placeholder="Ending follower base"
+                  placeholder={t("dr.followersEndPlaceholder")}
                 />
               </div>
             </div>
@@ -553,11 +555,11 @@ export default function DailyReportView({
 
           {/* Card 4: Marketing Financials & Hours */}
           <div className="bg-white p-4 rounded-xl border border-slate-205 shadow-sm space-y-3">
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-display border-b border-slate-100 pb-1.5">4. Operations & Sales</h3>
+            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-display border-b border-slate-100 pb-1.5">{t("dr.sectionOps")}</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Ad Budget Spent (〒)</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.adBudget")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -565,12 +567,12 @@ export default function DailyReportView({
                   value={adCost || ''}
                   onChange={(e) => setAdCost(Math.max(0, Number(e.target.value)))}
                   className="w-full text-xs p-2 rounded-lg border border-slate-205 focus:outline-none"
-                  placeholder="Ad Spend"
+                  placeholder={t("dr.adBudgetPlaceholder")}
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Orders Completed</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.orders")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -578,12 +580,12 @@ export default function DailyReportView({
                   value={orders || ''}
                   onChange={(e) => setOrders(Math.max(0, Number(e.target.value)))}
                   className="w-full text-xs p-2 rounded-lg border border-slate-205 focus:outline-none"
-                  placeholder="0"
+                  placeholder={t("dr.ordersPlaceholder")}
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Gross Sales Amount (〒)</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.salesAmount")}</label>
                 <input 
                   type="number"
                   min="0"
@@ -591,12 +593,12 @@ export default function DailyReportView({
                   value={salesAmount || ''}
                   onChange={(e) => setSalesAmount(Math.max(0, Number(e.target.value)))}
                   className="w-full text-xs p-2 rounded-lg border border-slate-205 focus:outline-none"
-                  placeholder="Gross Revenue"
+                  placeholder={t("dr.salesAmountPlaceholder")}
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Working Hours</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.workingHours")}</label>
                 <input 
                   type="number"
                   step="0.5"
@@ -604,18 +606,18 @@ export default function DailyReportView({
                   value={contentHours || ''}
                   onChange={(e) => setContentHours(Math.max(0.5, Number(e.target.value)))}
                   className="w-full text-xs p-2 rounded-lg border border-slate-205 focus:outline-none"
-                  placeholder="e.g. 1.5"
+                  placeholder={t("dr.workingHoursPlaceholder")}
                 />
               </div>
 
               <div className="col-span-3">
-                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">Qualitative Remarks</label>
+                <label className="block text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-0.5">{t("dr.notes")}</label>
                 <input 
                   type="text"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   className="w-full text-xs p-2.5 rounded-lg border border-slate-205 focus:outline-none"
-                  placeholder="Specific campaign comments, visual highlights or technical setbacks..."
+                  placeholder={t("dr.notesPlaceholder")}
                 />
               </div>
             </div>
@@ -626,55 +628,54 @@ export default function DailyReportView({
         {/* Right Live KPI Engine & Score Preview */}
         <div className="space-y-4">
           <div className="bg-slate-900 text-white rounded-xl p-4 shadow-sm border border-slate-800 sticky top-4 font-sans">
-            <span className="text-[9px] font-bold text-indigo-400 tracking-wider uppercase block">Real-Time Core Engine</span>
+            <span className="text-[9px] font-bold text-indigo-400 tracking-wider uppercase block">{t("dr.calcBadge")}</span>
             <h3 className="text-sm font-bold tracking-tight mt-0.5 flex items-center gap-1.5 border-b border-slate-800 pb-2 font-display">
               <RefreshCw size={12} className="text-indigo-400 animate-spin" />
-              Calculated Scoring
+              {t("dr.calcTitle")}
             </h3>
 
             {/* Huge KPI Score */}
             <div className="text-center py-4">
-              <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">KPI SCORE</span>
+              <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider">{t("dr.kpiScore")}</span>
               <h2 className="text-4xl font-extrabold text-white tracking-tight mt-0.5">
-                {calculatedPreview.kpiScore}
-                <span className="text-slate-500 text-lg font-normal"> / 100</span>
+                {t("dr.scoreFormat", { score: calculatedPreview.kpiScore })}
               </h2>
               <div className="mt-1.5 inline-block">
                 <span className={`px-2 py-0.5 text-[10px] font-bold rounded-lg border ${badgeColor}`}>
-                  {calculatedPreview.kpiStatus} Score
+                  {t(`dr.${calculatedPreview.kpiStatus.toLowerCase()}`)}
                 </span>
               </div>
             </div>
 
             {/* Formula weighting explanation card */}
             <div className="space-y-1.5 mt-2">
-              <span className="block text-[9px] font-bold text-slate-450 text-slate-400 tracking-wider uppercase">Weighted Factors:</span>
+              <span className="block text-[9px] font-bold text-slate-450 text-slate-400 tracking-wider uppercase">{t("dr.weightedFactors")}</span>
               
               <div className="space-y-1 text-xs text-slate-350 bg-slate-800/40 p-2.5 rounded-lg border border-slate-800">
                 <div className="flex justify-between items-center text-[11px]">
-                  <span className="text-slate-400">Leads Target (Weight 30%):</span>
+                  <span className="text-slate-400">{t("dr.factorLeads")}</span>
                   <span className="font-bold text-slate-100">{leads} / {targets.leads}</span>
                 </div>
                 <div className="flex justify-between items-center text-[11px]">
-                  <span className="text-slate-400">Reach Target (Weight 20%):</span>
+                  <span className="text-slate-400">{t("dr.factorReach")}</span>
                   <span className="font-bold text-slate-100">{formatCompact(reach)} / {formatCompact(targets.reach)}</span>
                 </div>
                 <div className="flex justify-between items-center text-[11px]">
-                  <span className="text-slate-400">Views Target (Weight 15%):</span>
+                  <span className="text-slate-400">{t("dr.factorViews")}</span>
                   <span className="font-bold text-slate-100">{formatCompact(views)} / {formatCompact(targets.views)}</span>
                 </div>
                 <div className="flex justify-between items-center text-[11px]">
-                  <span className="text-slate-400">Follower Growth (Weight 15%):</span>
+                  <span className="text-slate-400">{t("dr.factorGrowth")}</span>
                   <span className="font-bold text-slate-100">
                     {calculatedPreview.followerGrowth > 0 ? `+${calculatedPreview.followerGrowth}` : calculatedPreview.followerGrowth} / {targets.followerGrowth}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-[11px]">
-                  <span className="text-slate-400">Stories Produced (Weight 10%):</span>
+                  <span className="text-slate-400">{t("dr.factorStories")}</span>
                   <span className="font-bold text-slate-100">{stories} / {targets.stories}</span>
                 </div>
                 <div className="flex justify-between items-center text-[11px]">
-                  <span className="text-slate-400">Posts/Reels (Weight 10%):</span>
+                  <span className="text-slate-400">{t("dr.factorPR")}</span>
                   <span className="font-bold text-slate-100">{posts + reels} / {targets.postsAndReels}</span>
                 </div>
               </div>
@@ -682,30 +683,30 @@ export default function DailyReportView({
 
             {/* Auto calculations */}
             <div className="mt-4 pt-3 border-t border-slate-800 space-y-1.5">
-              <span className="block text-[9px] font-bold text-slate-400 tracking-wider uppercase">Auto Computed Business Stats</span>
+              <span className="block text-[9px] font-bold text-slate-400 tracking-wider uppercase">{t("dr.autoStats")}</span>
               
               <div className="grid grid-cols-2 gap-1.5 text-center text-xs font-mono">
                 <div className="bg-slate-800/20 p-1.5 rounded-lg border border-slate-850">
-                  <span className="text-[9px] text-slate-450 block font-sans">Conversion</span>
+                  <span className="text-[9px] text-slate-450 block font-sans">{t("dr.conversion")}</span>
                   <span className="font-bold block text-white mt-0.5">
                     {calculatedPreview.conversionRate.toFixed(1)}%
                   </span>
                 </div>
                 <div className="bg-slate-800/20 p-1.5 rounded-lg border border-slate-850">
-                  <span className="text-[9px] text-slate-450 block font-sans">Cost Per Lead</span>
+                  <span className="text-[9px] text-slate-450 block font-sans">{t("dr.costPerLead")}</span>
                   <span className="font-bold block text-white mt-0.5">
                     {calculatedPreview.costPerLead.toFixed(0)} 〒
                   </span>
                 </div>
                 <div className="bg-slate-800/20 p-1.5 rounded-lg border border-slate-850">
-                  <span className="text-[9px] text-slate-450 block font-sans">ROAS Return</span>
+                  <span className="text-[9px] text-slate-450 block font-sans">{t("dr.roas")}</span>
                   <span className="font-bold block text-indigo-400 mt-0.5">
                     {calculatedPreview.roas.toFixed(1)}x
                   </span>
                 </div>
                 <div className="bg-slate-800/20 p-1.5 rounded-lg border border-slate-850">
-                  <span className="text-[9px] text-slate-450 block font-sans">Status</span>
-                  <span className="font-bold block text-indigo-305 mt-0.5 text-indigo-300">FACTOR_OK</span>
+                  <span className="text-[9px] text-slate-450 block font-sans">{t("dr.status")}</span>
+                  <span className="font-bold block text-indigo-305 mt-0.5 text-indigo-300">{t("dr.factorOk")}</span>
                 </div>
               </div>
             </div>
@@ -714,7 +715,7 @@ export default function DailyReportView({
             <div className="mt-4">
               {currentUser.role === 'Viewer' ? (
                 <div className="p-2 bg-slate-800/60 text-slate-400 border border-slate-700/50 rounded-lg text-center text-[10px]">
-                  Your Account Role is Viewer. You are not allowed to submit daily reports.
+                  {t("dr.viewerRestricted")}
                 </div>
               ) : (
                 <button
@@ -723,7 +724,7 @@ export default function DailyReportView({
                   id="btn-save-daily-report"
                 >
                   <Save size={13} />
-                  <span>Submit to Google Sheets</span>
+                  <span>{t("dr.submitButton")}</span>
                 </button>
               )}
             </div>

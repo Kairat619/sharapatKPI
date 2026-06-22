@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLanguage } from "../i18n/LanguageContext";
 import {
   Download,
   Printer,
@@ -51,6 +52,8 @@ export default function ExportSettingsView({
   syncState,
   onPullData,
 }: ExportSettingsViewProps) {
+  const { t } = useLanguage();
+
   // Roles list
   const roles: UserRole[] = ["Admin", "Manager", "Staff", "Viewer"];
 
@@ -107,7 +110,7 @@ export default function ExportSettingsView({
   // 1. Export Monthly KPI Summary CSV Spreadsheet
   const exportMonthlySummary = () => {
     if (reports.length === 0) {
-      alert("No data available to compile.");
+      alert(t("es.noData"));
       return;
     }
 
@@ -126,7 +129,7 @@ export default function ExportSettingsView({
   // 2. Export Department Summary CSV (Staff contributions breakdown)
   const exportDepartmentSummary = () => {
     if (reports.length === 0) {
-      alert("No data available to compile.");
+      alert(t("es.noData"));
       return;
     }
 
@@ -213,7 +216,7 @@ export default function ExportSettingsView({
   // 3. Export Account Summary CSV
   const exportAccountSummary = () => {
     if (reports.length === 0) {
-      alert("No data available to compile.");
+      alert(t("es.noData"));
       return;
     }
 
@@ -278,14 +281,13 @@ export default function ExportSettingsView({
       {/* Title */}
       <div className="border-b border-slate-205 pb-3">
         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-650 font-extrabold">
-          System Controls Gate
+          {t("es.badge")}
         </span>
         <h2 className="text-xl font-bold text-slate-905 tracking-tight mt-0.5 font-display">
-          Export, Targets & Connection Console
+          {t("es.title")}
         </h2>
         <p className="text-xs text-slate-500">
-          Formulate custom SMM KPI goals, switch active session permissions to
-          test staff roles, or copy Google spreadsheet Apps Script.
+          {t("es.desc")}
         </p>
       </div>
 
@@ -295,17 +297,16 @@ export default function ExportSettingsView({
           {/* Google Sheets Live Database Connection Card */}
           <div className="bg-white p-4 rounded-xl border border-slate-205 shadow-sm space-y-3">
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-2">
-              <Database size={13} className="text-emerald-500" /> Google Sheets
-              Sync Console
+              <Database size={13} className="text-emerald-500" /> {t("es.sheetsTitle")}
             </h3>
 
             <div>
               <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                Apps Script Web App Exec URL
+                {t("es.urlLabel")}
               </label>
               <input
                 type="text"
-                placeholder="https://script.google.com/macros/s/.../exec"
+                placeholder={t("es.urlPlaceholder")}
                 value={sheetUrl}
                 onChange={(e) => {
                   setSheetUrl(e.target.value);
@@ -326,7 +327,7 @@ export default function ExportSettingsView({
                 >
                   <RotateCw size={11} />
                 </div>
-                <span>Sync / Pull Sheets</span>
+                <span>{t("es.syncButton")}</span>
               </button>
             </div>
 
@@ -341,26 +342,23 @@ export default function ExportSettingsView({
                       : "bg-indigo-50 text-indigo-900 border-indigo-100"
                 }`}
               >
-                <span className="font-extrabold block">Connection Status:</span>
+                <span className="font-extrabold block">{t("es.connectionStatus")}</span>
                 {syncState.message}
               </div>
             )}
 
             <div className="text-[10px] text-slate-550 leading-normal bg-slate-50 p-2.5 rounded-lg border border-slate-150">
               <span className="font-extrabold text-slate-700 block mb-0.5">
-                🚀 Professional Production Connection:
+                🚀 {t("es.prodConnection")}
               </span>
-              Your <strong>Google Web App URL</strong> matches your Google
-              account. It acts as a CORS-supported serverless database adapter
-              bypassing rigid dev proxies and securing live reads & writes
-              without local config blocks!
+              {t("es.prodDesc")}
             </div>
           </div>
 
           {/* Export card widget */}
           <div className="bg-white p-4 rounded-xl border border-slate-205 shadow-sm space-y-3">
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-2">
-              <Download size={13} className="text-indigo-600" /> Export Center
+              <Download size={13} className="text-indigo-600" /> {t("es.exportTitle")}
             </h3>
 
             <div className="space-y-1.5">
@@ -368,9 +366,9 @@ export default function ExportSettingsView({
                 onClick={exportMonthlySummary}
                 className="w-full flex items-center justify-between p-2.5 bg-slate-50 hover:bg-indigo-50/50 text-slate-700 hover:text-indigo-900 rounded-lg text-xs font-bold border border-slate-201 hover:border-indigo-200 transition cursor-pointer text-left"
               >
-                <span>SMM Monthly Summary</span>
+                <span>{t("es.monthlySummary")}</span>
                 <span className="font-mono text-[8px] px-1.5 py-0.5 bg-white text-slate-400 border border-slate-100 rounded">
-                  CSV
+                  {t("common.csv")}
                 </span>
               </button>
 
@@ -378,9 +376,9 @@ export default function ExportSettingsView({
                 onClick={exportDepartmentSummary}
                 className="w-full flex items-center justify-between p-2.5 bg-slate-50 hover:bg-indigo-50/50 text-slate-700 hover:text-indigo-900 rounded-lg text-xs font-bold border border-slate-201 hover:border-indigo-200 transition cursor-pointer text-left"
               >
-                <span>Staff Department Summary</span>
+                <span>{t("es.staffSummary")}</span>
                 <span className="font-mono text-[8px] px-1.5 py-0.5 bg-white text-slate-400 border border-slate-100 rounded">
-                  CSV
+                  {t("common.csv")}
                 </span>
               </button>
 
@@ -388,9 +386,9 @@ export default function ExportSettingsView({
                 onClick={exportAccountSummary}
                 className="w-full flex items-center justify-between p-2.5 bg-slate-50 hover:bg-indigo-50/50 text-slate-700 hover:text-indigo-900 rounded-lg text-xs font-bold border border-slate-201 hover:border-indigo-200 transition cursor-pointer text-left"
               >
-                <span>Channels KPI Summary</span>
+                <span>{t("es.channelSummary")}</span>
                 <span className="font-mono text-[8px] px-1.5 py-0.5 bg-white text-slate-400 border border-slate-100 rounded">
-                  CSV
+                  {t("common.csv")}
                 </span>
               </button>
             </div>
@@ -401,7 +399,7 @@ export default function ExportSettingsView({
                 className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-1.5 shadow-xs transition cursor-pointer"
               >
                 <Printer size={12} />
-                <span>Print Executive Report</span>
+                <span>{t("es.printReport")}</span>
               </button>
             </div>
           </div>
@@ -409,13 +407,11 @@ export default function ExportSettingsView({
           {/* Role management switcher card */}
           <div className="bg-white p-4 rounded-xl border border-slate-205 shadow-sm space-y-3">
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-2">
-              <User size={13} className="text-indigo-650" /> Live Role Switcher
-              (Simulator)
+              <User size={13} className="text-indigo-650" /> {t("es.roleSwitcher")}
             </h3>
 
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              This SMM platform incorporates granular, role-based database
-              permissions simulation:
+              {t("es.roleDesc")}
             </p>
 
             <div className="grid grid-cols-2 gap-1.5">
@@ -430,7 +426,7 @@ export default function ExportSettingsView({
                         : "bg-slate-50 text-slate-600 border-slate-201 hover:bg-slate-100"
                     }`}
                 >
-                  {role}
+                  {t("role." + role)}
                 </button>
               ))}
             </div>
@@ -438,28 +434,26 @@ export default function ExportSettingsView({
             <div className="p-2.5 bg-indigo-50/50 border border-indigo-100 rounded-lg text-[10px] text-indigo-900 leading-relaxed space-y-1">
               <span className="font-bold flex items-center gap-1">
                 <ShieldAlert size={11} className="text-indigo-650" />
-                Active Permissions Info:
+                {t("es.activePermissions")}
               </span>
               {currentUser.role === "Admin" && (
                 <span className="block text-[9px] text-indigo-950 font-bold">
-                  Full reading, data entry, reports deletions, config target
-                  benchmarks.
+                  {t("es.adminPerms")}
                 </span>
               )}
               {currentUser.role === "Manager" && (
                 <span className="block text-[9px] text-indigo-950 font-bold font-medium">
-                  Full dashboard analysis, print configurations, export formats.
+                  {t("es.managerPerms")}
                 </span>
               )}
               {currentUser.role === "Staff" && (
                 <span className="block text-[9px] text-[10px] text-indigo-950 font-bold font-medium">
-                  Log new daily report rows, access local logs history.
+                  {t("es.staffPerms")}
                 </span>
               )}
               {currentUser.role === "Viewer" && (
                 <span className="block text-[9px] text-slate-600 font-bold font-medium">
-                  Dashboard read-only views. Submissions controls are
-                  restricted.
+                  {t("es.viewerPerms")}
                 </span>
               )}
             </div>
@@ -471,28 +465,24 @@ export default function ExportSettingsView({
           {/* Targets config editor */}
           <div className="bg-white p-4 rounded-xl border border-slate-205 shadow-sm space-y-3">
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-2">
-              <Sliders size={13} className="text-indigo-600" /> Executive Target
-              Benchmarks (Daily Normalizations)
+              <Sliders size={13} className="text-indigo-600" /> {t("es.targetsTitle")}
             </h3>
 
             <p className="text-[11px] text-slate-500">
-              Update normalization benchmarks below to calibrate real-time
-              weighted KPI score calculations (Scale indices matching daily
-              targets):
+              {t("es.targetsDesc")}
             </p>
 
             {settingsSaved && (
               <div className="p-2 bg-emerald-50 text-emerald-800 border border-emerald-150 text-[11px] font-bold rounded-lg flex items-center gap-1.5">
                 <Sparkles size={12} className="text-emerald-500 animate-spin" />{" "}
-                KPI Targets Updated. Real-time scores will calibrate
-                immediately!
+                {t("es.targetsSaved")}
               </div>
             )}
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div>
                 <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">
-                  Target Leads (30%)
+                  {t("es.targetLeads")}
                 </label>
                 <input
                   type="number"
@@ -506,7 +496,7 @@ export default function ExportSettingsView({
 
               <div>
                 <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">
-                  Target Reach (20%)
+                  {t("es.targetReach")}
                 </label>
                 <input
                   type="number"
@@ -520,7 +510,7 @@ export default function ExportSettingsView({
 
               <div>
                 <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">
-                  Target Views (15%)
+                  {t("es.targetViews")}
                 </label>
                 <input
                   type="number"
@@ -534,7 +524,7 @@ export default function ExportSettingsView({
 
               <div>
                 <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">
-                  Target growth (15%)
+                  {t("es.targetGrowth")}
                 </label>
                 <input
                   type="number"
@@ -548,7 +538,7 @@ export default function ExportSettingsView({
 
               <div>
                 <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">
-                  Target Stories (10%)
+                  {t("es.targetStories")}
                 </label>
                 <input
                   type="number"
@@ -562,7 +552,7 @@ export default function ExportSettingsView({
 
               <div>
                 <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">
-                  Posts/Reels (10%)
+                  {t("es.targetPR")}
                 </label>
                 <input
                   type="number"
@@ -578,7 +568,7 @@ export default function ExportSettingsView({
             <div className="pt-2 text-right">
               {currentUser.role === "Staff" || currentUser.role === "Viewer" ? (
                 <span className="text-[10px] text-slate-400 font-bold font-mono">
-                  Permission Restricted to Admin & Managers
+                  {t("es.restricted")}
                 </span>
               ) : (
                 <button
@@ -586,7 +576,7 @@ export default function ExportSettingsView({
                   onClick={handleSaveTargets}
                   className="py-1.5 px-3 bg-indigo-650 hover:bg-indigo-700 bg-indigo-600 rounded-lg text-xs font-bold text-white shadow-xs transition cursor-pointer"
                 >
-                  Save Benchmark Weights
+                  {t("es.saveTargets")}
                 </button>
               )}
             </div>
@@ -596,8 +586,7 @@ export default function ExportSettingsView({
           <div className="bg-slate-900 border border-slate-800 text-white p-4 rounded-xl space-y-3">
             <div className="flex items-center justify-between pb-2 border-b border-slate-800">
               <h3 className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-slate-100 font-display">
-                <Code size={13} className="text-indigo-400" /> Google Sheets
-                Apps Script Backend
+                <Code size={13} className="text-indigo-400" /> {t("es.scriptTitle")}
               </h3>
               <button
                 type="button"
@@ -609,15 +598,12 @@ export default function ExportSettingsView({
                 ) : (
                   <Copy size={11} />
                 )}
-                <span>{copiedScript ? "Copied" : "Copy"}</span>
+                <span>{copiedScript ? t("common.copied") : t("common.copy")}</span>
               </button>
             </div>
 
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              To deploy this platform using your Google Sheet as the database,
-              open Google Sheet, select{" "}
-              <strong>Extensions &gt; Apps Script</strong>, clear default code,
-              paste this script, and Deploy as Web App:
+              {t("es.scriptDesc")}
             </p>
 
             <div className="relative">
@@ -629,8 +615,7 @@ export default function ExportSettingsView({
             </div>
 
             <div className="text-[9px] bg-slate-800/40 p-2 rounded-lg text-indigo-300 leading-relaxed font-mono">
-              ★ SYSTEM_OK: v2 Code utilizes Sheet Service compilation, batch
-              ranges, and audit ledger tracking for offline syncing.
+              ★ {t("es.scriptStatus")}
             </div>
           </div>
         </div>

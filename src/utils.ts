@@ -227,8 +227,8 @@ function doGet(e) {
  * Handles write and modification operations from React application
  */
 function doPost(e) {
-  initializeSheets();
   try {
+    initializeSheets();
     const postData = JSON.parse(e.postData.contents);
     const action = postData.action;
     
@@ -348,15 +348,19 @@ function getReports() {
 function updateTargetsInSheet(targets, userEmail) {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = ss.getSheetByName(SETTINGS_SHEET);
-    if (!sheet) return { error: "Settings sheet not found" };
+    let sheet = ss.getSheetByName(SETTINGS_SHEET);
+    if (!sheet) {
+      initializeSheets();
+      sheet = ss.getSheetByName(SETTINGS_SHEET);
+    }
+    if (!sheet) return { error: "Could not create or find Settings sheet" };
     
-    sheet.getRange("B2").setValue(Number(targets.leads));
-    sheet.getRange("B3").setValue(Number(targets.reach));
-    sheet.getRange("B4").setValue(Number(targets.views));
-    sheet.getRange("B5").setValue(Number(targets.followerGrowth));
-    sheet.getRange("B6").setValue(Number(targets.stories));
-    sheet.getRange("B7").setValue(Number(targets.postsAndReels));
+    sheet.getRange("B2").setValue(Number(targets.leads) || 30);
+    sheet.getRange("B3").setValue(Number(targets.reach) || 8000);
+    sheet.getRange("B4").setValue(Number(targets.views) || 15000);
+    sheet.getRange("B5").setValue(Number(targets.followerGrowth) || 50);
+    sheet.getRange("B6").setValue(Number(targets.stories) || 6);
+    sheet.getRange("B7").setValue(Number(targets.postsAndReels) || 2);
     
     logActivity("sys-cfg", userEmail || "unknown-manager", "UPDATE_TARGETS", JSON.stringify(targets));
     return { success: true };
@@ -371,8 +375,12 @@ function updateTargetsInSheet(targets, userEmail) {
 function submitReport(reportData, userEmail) {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = ss.getSheetByName(DAILY_REPORTS_SHEET);
-    if (!sheet) initializeSheets();
+    let sheet = ss.getSheetByName(DAILY_REPORTS_SHEET);
+    if (!sheet) {
+      initializeSheets();
+      sheet = ss.getSheetByName(DAILY_REPORTS_SHEET);
+    }
+    if (!sheet) return { error: "Could not create or find DailyReports sheet" };
     
     const id = "rep-" + Date.now() + Math.floor(Math.random() * 100);
     const dateFormatted = reportData.date || new Date().toISOString().split('T')[0];
@@ -383,14 +391,15 @@ function submitReport(reportData, userEmail) {
     const costPerLead = reportData.leads > 0 ? (reportData.adCost / reportData.leads) : 0;
     const roas = reportData.adCost > 0 ? (reportData.salesAmount / reportData.adCost) : 0;
     
-    // Targets
+    // Targets with zero-guard
     const targets = getTargetsFromSheet();
-    const leadRatio = Math.min(1.2, reportData.leads / targets.leads);
-    const reachRatio = Math.min(1.2, reportData.reach / targets.reach);
-    const viewsRatio = Math.min(1.2, reportData.views / targets.views);
-    const growthRatio = Math.min(1.2, Math.max(0, followerGrowth) / targets.followerGrowth);
-    const storiesRatio = Math.min(1.2, reportData.stories / targets.stories);
-    const prRatio = Math.min(1.2, (reportData.posts + reportData.reels) / targets.postsAndReels);
+    const safeDiv = (val, divisor) => divisor > 0 ? val / divisor : 0;
+    const leadRatio = Math.min(1.2, safeDiv(reportData.leads, targets.leads));
+    const reachRatio = Math.min(1.2, safeDiv(reportData.reach, targets.reach));
+    const viewsRatio = Math.min(1.2, safeDiv(reportData.views, targets.views));
+    const growthRatio = Math.min(1.2, safeDiv(Math.max(0, followerGrowth), targets.followerGrowth));
+    const storiesRatio = Math.min(1.2, safeDiv(reportData.stories, targets.stories));
+    const prRatio = Math.min(1.2, safeDiv((reportData.posts + reportData.reels), targets.postsAndReels));
     
     const kpiScore = Math.min(100, Math.round(
       (leadRatio * 30) + (reachRatio * 20) + (viewsRatio * 15) + (growthRatio * 15) + (storiesRatio * 10) + (prRatio * 10)
@@ -429,17 +438,18 @@ function getTargetsFromSheet() {
   const sheet = ss.getSheetByName(SETTINGS_SHEET);
   if (!sheet) return { leads: 30, reach: 8000, views: 15000, followerGrowth: 50, stories: 6, postsAndReels: 2 };
   
-  const vals = sheet.getRange("A2:B7").getValues();
+  const lastRow = sheet.getLastRow();
+  const vals = lastRow > 1 ? sheet.getRange("A2:B" + Math.min(lastRow, 7)).getValues() : [];
   const t = { leads: 30, reach: 8000, views: 15000, followerGrowth: 50, stories: 6, postsAndReels: 2 };
   vals.forEach(row => {
-    const key = row[0];
+    const key = String(row[0] || "").trim();
     const val = Number(row[1]);
-    if (key === "TARGET_LEADS") t.leads = val;
-    if (key === "TARGET_REACH") t.reach = val;
-    if (key === "TARGET_VIEWS") t.views = val;
-    if (key === "TARGET_GROWTH") t.followerGrowth = val;
-    if (key === "TARGET_STORIES") t.stories = val;
-    if (key === "TARGET_PR") t.postsAndReels = val;
+    if (key === "TARGET_LEADS" && val > 0) t.leads = val;
+    if (key === "TARGET_REACH" && val > 0) t.reach = val;
+    if (key === "TARGET_VIEWS" && val > 0) t.views = val;
+    if (key === "TARGET_GROWTH" && val > 0) t.followerGrowth = val;
+    if (key === "TARGET_STORIES" && val > 0) t.stories = val;
+    if (key === "TARGET_PR" && val > 0) t.postsAndReels = val;
   });
   return t;
 }

@@ -15,12 +15,14 @@ import {
   UserCheck
 } from 'lucide-react';
 import { DailyReport } from '../types';
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface DashboardViewProps {
   reports: DailyReport[];
 }
 
 export default function DashboardView({ reports }: DashboardViewProps) {
+  const { t } = useLanguage();
   const [hoveredChartIndex, setHoveredChartIndex] = useState<string | null>(null);
 
   // If no reports are registered
@@ -30,9 +32,9 @@ export default function DashboardView({ reports }: DashboardViewProps) {
         <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 mb-4 animate-pulse">
           <Activity size={28} />
         </div>
-        <h3 className="text-lg font-semibold text-slate-800">No Analytics Data Yet</h3>
+        <h3 className="text-lg font-semibold text-slate-800">{t("dash.emptyTitle")}</h3>
         <p className="text-sm text-slate-500 max-w-sm mt-1">
-          Please submit a Daily Report first to seed data and populate the v2 SMM Management Dashboard.
+          {t("dash.emptyDesc")}
         </p>
       </div>
     );
@@ -183,16 +185,16 @@ export default function DashboardView({ reports }: DashboardViewProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
         <div>
           <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-600 flex items-center gap-1.5">
-            <Sparkles size={12} className="text-indigo-500 animate-spin" /> Executive Cockpit Live
+            <Sparkles size={12} className="text-indigo-500 animate-spin" /> {t("dash.badge")}
           </span>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight mt-0.5 font-display">Management Insights</h2>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight mt-0.5 font-display">{t("dash.title")}</h2>
           <p className="text-xs text-slate-500">
-            Analyzing SMM, marketing performance, staff productivity, and revenue.
+            {t("dash.desc")}
           </p>
         </div>
         <div className="flex items-center gap-1.5 bg-slate-105 border border-slate-200 text-slate-705 rounded-lg py-1 px-2.5 self-start sm:self-auto font-mono text-[11px] font-bold">
           <Calendar size={12} className="text-slate-500" />
-          <span>Period: June 2026</span>
+          <span>{t("dash.period")}</span>
         </div>
       </div>
 
@@ -201,7 +203,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
         {/* Total Reach */}
         <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between hover:border-indigo-300 transition duration-250">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Reach</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t("dash.totalReach")}</span>
             <div className="p-1.5 rounded-lg bg-orange-50 text-orange-500 shrink-0">
               <Users size={14} />
             </div>
@@ -211,7 +213,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
               {formatCompact(totalReach)}
             </h3>
             <span className="text-[10px] text-emerald-600 font-bold mt-0.5 flex items-center gap-0.5">
-              <ArrowUpRight size={10} /> +12.4% vs last mo
+              <ArrowUpRight size={10} /> {t("dash.reachTrend")}
             </span>
           </div>
         </div>
@@ -219,7 +221,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
         {/* Total Views */}
         <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between hover:border-indigo-300 transition duration-250">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Views</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t("dash.totalViews")}</span>
             <div className="p-1.5 rounded-lg bg-sky-50 text-sky-500 shrink-0">
               <Eye size={14} />
             </div>
@@ -229,7 +231,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
               {formatCompact(totalViews)}
             </h3>
             <span className="text-[10px] text-emerald-600 font-bold mt-0.5 flex items-center gap-0.5">
-              <ArrowUpRight size={10} /> +8.9% views growth
+              <ArrowUpRight size={10} /> {t("dash.viewsTrend")}
             </span>
           </div>
         </div>
@@ -237,7 +239,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
         {/* Total Leads */}
         <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between hover:border-indigo-300 transition duration-250">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Leads</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t("dash.totalLeads")}</span>
             <div className="p-1.5 rounded-lg bg-purple-50 text-purple-500 shrink-0">
               <PhoneCall size={14} />
             </div>
@@ -247,7 +249,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
               {formatCompact(totalLeads)}
             </h3>
             <span className="text-[10px] text-emerald-600 font-bold mt-0.5 flex items-center gap-0.5">
-              <ArrowUpRight size={10} /> +15.3% conversion
+              <ArrowUpRight size={10} /> {t("dash.leadsTrend")}
             </span>
           </div>
         </div>
@@ -255,7 +257,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
         {/* Total Revenue */}
         <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between hover:border-indigo-300 transition duration-250">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total Revenue</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t("dash.totalRevenue")}</span>
             <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 shrink-0">
               <DollarSign size={14} />
             </div>
@@ -265,7 +267,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
               {formatKZT(totalRevenue)}
             </h3>
             <span className="text-[10px] text-indigo-600 font-bold mt-0.5 flex items-center gap-0.5">
-              <ArrowUpRight size={10} /> {totalSales} Orders placed
+              <ArrowUpRight size={10} /> {t("dash.ordersPlaced", { count: totalSales })}
             </span>
           </div>
         </div>
@@ -275,7 +277,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
         {/* Total Follower Growth */}
         <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between hover:border-indigo-300 transition duration-250">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Followers Growth</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t("dash.followerGrowth")}</span>
             <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-500 shrink-0">
               <TrendingUp size={14} />
             </div>
@@ -284,20 +286,20 @@ export default function DashboardView({ reports }: DashboardViewProps) {
             <h3 className="text-xl font-extrabold text-slate-900 tracking-tight font-display">
               {totalFollowerGrowth > 0 ? `+${formatCompact(totalFollowerGrowth)}` : formatCompact(totalFollowerGrowth)}
             </h3>
-            <p className="text-[10px] text-slate-400">Net acquisition</p>
+            <p className="text-[10px] text-slate-400">{t("dash.netAcquisition")}</p>
           </div>
         </div>
 
         {/* Average KPI Score */}
         <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between hover:border-indigo-300 transition duration-250">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Average KPI Score</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t("dash.avgKpiScore")}</span>
             <div className="p-1.5 rounded-lg bg-indigo-50 text-indigo-650 shrink-0">
               <Award size={14} />
             </div>
           </div>
           <div className="mt-2.5">
-            <h3 className="text-xl font-extrabold text-slate-900 tracking-tight font-display">{avgKpiScore} / 100</h3>
+            <h3 className="text-xl font-extrabold text-slate-900 tracking-tight font-display">{t("dash.scoreFormat", { score: avgKpiScore })}</h3>
             <div className="w-full bg-slate-100 h-1 rounded-full mt-1.5 overflow-hidden">
               <div 
                 className="bg-indigo-600 h-1 rounded-full" 
@@ -310,14 +312,14 @@ export default function DashboardView({ reports }: DashboardViewProps) {
         {/* Best Performing Account */}
         <div className="bg-white p-3.5 rounded-xl border border-slate-200 col-span-2 shadow-xs flex flex-col justify-between hover:border-indigo-300 transition duration-250">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Best Performing Account</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t("dash.bestAccount")}</span>
             <div className="p-1.5 rounded-lg bg-amber-50 text-amber-550 shrink-0">
               <Sparkles size={14} />
             </div>
           </div>
           <div className="mt-2.5">
             <h3 className="text-base font-extrabold text-slate-905 truncate tracking-tight font-display">{bestAccountName}</h3>
-            <p className="text-[9px] text-slate-400">Based on rolling daily weighted KPI calculations</p>
+            <p className="text-[9px] text-slate-400">{t("dash.bestAccountDesc")}</p>
           </div>
         </div>
       </div>
@@ -326,7 +328,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
       <section className="bg-slate-950 text-white rounded-xl p-4 shadow-md border border-slate-900">
         <h3 className="text-sm font-bold flex items-center gap-1.5 mb-4 font-display">
           <Award className="text-indigo-400" size={16} />
-          Executive Spotlight & Star Performers
+          {t("dash.spotlight")}
         </h3>
         
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
@@ -336,7 +338,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
               🏆
             </div>
             <div className="min-w-0">
-              <span className="text-[9px] font-bold text-amber-450 tracking-wider uppercase block leading-none">Best Account Today</span>
+              <span className="text-[9px] font-bold text-amber-450 tracking-wider uppercase block leading-none">{t("dash.bestAccountToday")}</span>
               <h4 className="text-xs font-bold truncate text-white mt-1 leading-tight">{bestAccountToday}</h4>
             </div>
           </div>
@@ -347,7 +349,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
               🏆
             </div>
             <div className="min-w-0">
-              <span className="text-[9px] font-bold text-emerald-450 tracking-wider uppercase block leading-none">Best Marketer</span>
+              <span className="text-[9px] font-bold text-emerald-450 tracking-wider uppercase block leading-none">{t("dash.bestMarketer")}</span>
               <h4 className="text-xs font-bold truncate text-white mt-1 leading-tight">{bestMarketer}</h4>
             </div>
           </div>
@@ -358,7 +360,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
               🏆
             </div>
             <div className="min-w-0">
-              <span className="text-[9px] font-bold text-indigo-450 tracking-wider uppercase block leading-none">Best SMM Specialist</span>
+              <span className="text-[9px] font-bold text-indigo-450 tracking-wider uppercase block leading-none">{t("dash.bestSmm")}</span>
               <h4 className="text-xs font-bold truncate text-white mt-1 leading-tight">{bestSmm}</h4>
             </div>
           </div>
@@ -369,7 +371,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
               🏆
             </div>
             <div className="min-w-0">
-              <span className="text-[9px] font-bold text-sky-450 tracking-wider uppercase block leading-none">Best Videographer</span>
+              <span className="text-[9px] font-bold text-sky-450 tracking-wider uppercase block leading-none">{t("dash.bestVideographer")}</span>
               <h4 className="text-xs font-bold truncate text-white mt-1 leading-tight">{bestVideographer}</h4>
             </div>
           </div>
@@ -380,7 +382,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
               💰
             </div>
             <div className="min-w-0">
-              <span className="text-[9px] font-bold text-purple-455 tracking-wider uppercase block leading-none">Highest Sales Account</span>
+              <span className="text-[9px] font-bold text-purple-455 tracking-wider uppercase block leading-none">{t("dash.highestSales")}</span>
               <h4 className="text-xs font-bold truncate text-white mt-1 leading-tight">{highestSalesAccount}</h4>
             </div>
           </div>
@@ -391,7 +393,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
               ⚡
             </div>
             <div className="min-w-0">
-              <span className="text-[9px] font-bold text-teal-450 tracking-wider uppercase block leading-none">Highest Lead Gen Account</span>
+              <span className="text-[9px] font-bold text-teal-450 tracking-wider uppercase block leading-none">{t("dash.highestLeads")}</span>
               <h4 className="text-xs font-bold truncate text-white mt-1 leading-tight">{highestLeadsAccount}</h4>
             </div>
           </div>
@@ -405,9 +407,9 @@ export default function DashboardView({ reports }: DashboardViewProps) {
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
           <div>
             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 font-display">
-              <Activity size={14} className="text-indigo-500" /> KPI Score Trend
+              <Activity size={14} className="text-indigo-500" /> {t("dash.kpiTrend")}
             </h4>
-            <p className="text-[10px] text-slate-400">Daily rolling average weighted KPI score</p>
+            <p className="text-[10px] text-slate-400">{t("dash.kpiTrendSub")}</p>
           </div>
           
           <div className="h-44 mt-4 flex items-end justify-between gap-1 border-b border-l border-slate-100 pb-2 pl-2 relative">
@@ -423,7 +425,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
                   {/* Tooltip */}
                   {hoveredChartIndex === `kpi-${i}` && (
                     <div className="absolute -top-8 bg-slate-900 text-white text-[9px] py-0.5 px-2 rounded shadow-lg z-10 font-mono whitespace-nowrap">
-                      {pt.date}: {pt.score} pts
+                      {t("dash.kpiTrendTooltip", { date: pt.date, score: pt.score })}
                     </div>
                   )}
                   {/* Line anchor node (Simulated with elegant vertical bar) */}
@@ -446,9 +448,9 @@ export default function DashboardView({ reports }: DashboardViewProps) {
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
           <div>
             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 font-display">
-              <Award size={14} className="text-indigo-500" /> Account Performance Compare
+              <Award size={14} className="text-indigo-500" /> {t("dash.accountCompare")}
             </h4>
-            <p className="text-[10px] text-slate-400">Accumulated performance average KPI index comparing active channels</p>
+            <p className="text-[10px] text-slate-400">{t("dash.accountCompareSub")}</p>
           </div>
 
           <div className="mt-4 space-y-3">
@@ -464,7 +466,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
                 <div key={name} className="space-y-0.5">
                   <div className="flex justify-between text-[11px]">
                     <span className="font-bold text-slate-700 truncate">{name}</span>
-                    <span className="font-mono text-slate-500 shrink-0">{avgScore} score ({m.count} logs)</span>
+                    <span className="font-mono text-slate-500 shrink-0">{t("dash.accountBar", { score: avgScore, count: m.count })}</span>
                   </div>
                   <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden flex items-center border border-slate-200/40">
                     <div 
@@ -485,9 +487,9 @@ export default function DashboardView({ reports }: DashboardViewProps) {
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between col-span-1">
           <div>
             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 font-display">
-              <CreditCard size={14} className="text-indigo-500" /> Platform Sales Hubs
+              <CreditCard size={14} className="text-indigo-500" /> {t("dash.platformSales")}
             </h4>
-            <p className="text-[10px] text-slate-400">Comparing generated revenue</p>
+            <p className="text-[10px] text-slate-400">{t("dash.platformSalesSub")}</p>
           </div>
 
           <div className="mt-3 flex flex-col items-center justify-center">
@@ -526,7 +528,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
               </svg>
               <div className="absolute text-center">
                 <span className="text-base font-bold text-slate-800 font-sans">{instagramSalesPct}%</span>
-                <span className="text-[8px] text-slate-400 block whitespace-nowrap">Instagram Sales</span>
+                <span className="text-[8px] text-slate-400 block whitespace-nowrap">{t("dash.instagramSales")}</span>
               </div>
             </div>
 
@@ -534,14 +536,14 @@ export default function DashboardView({ reports }: DashboardViewProps) {
               <div className="bg-slate-50 p-1.5 text-center rounded-lg border border-slate-200/60">
                 <div className="flex items-center justify-center gap-1">
                   <span className="w-2 h-2 bg-pink-500 rounded-full inline-block"></span>
-                  <span className="text-[10px] font-bold text-slate-600">Instagram</span>
+                  <span className="text-[10px] font-bold text-slate-600">{t("dash.instagram")}</span>
                 </div>
                 <span className="text-xs font-mono font-bold block text-slate-900 mt-0.5">{instagramSalesPct}%</span>
               </div>
               <div className="bg-slate-50 p-1.5 text-center rounded-lg border border-slate-200/60">
                 <div className="flex items-center justify-center gap-1">
                   <span className="w-2 h-2 bg-slate-900 rounded-full inline-block"></span>
-                  <span className="text-[10px] font-bold text-slate-600">TikTok</span>
+                  <span className="text-[10px] font-bold text-slate-600">{t("dash.tiktok")}</span>
                 </div>
                 <span className="text-xs font-mono font-bold block text-slate-900 mt-0.5">{tiktokSalesPct}%</span>
               </div>
@@ -553,9 +555,9 @@ export default function DashboardView({ reports }: DashboardViewProps) {
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between col-span-1">
           <div>
             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 font-display">
-              <PhoneCall size={14} className="text-indigo-500" /> Active Lead Generation
+              <PhoneCall size={14} className="text-indigo-500" /> {t("dash.leadGen")}
             </h4>
-            <p className="text-[10px] text-slate-400">Total compiled leads generated by account channels</p>
+            <p className="text-[10px] text-slate-400">{t("dash.leadGenSub")}</p>
           </div>
 
           <div className="h-36 flex items-end justify-around border-b border-slate-150 pb-2 relative mt-4">
@@ -573,7 +575,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
                   >
                     {hoveredChartIndex === `lead-${i}` && (
                       <div className="absolute -top-8 bg-slate-900 text-white text-[9px] py-0.5 px-2 rounded shadow-lg z-10 whitespace-nowrap font-mono">
-                        {item.fullName}: {item.leads} leads
+                        {t("dash.leadTooltip", { name: item.fullName, leads: item.leads })}
                       </div>
                     )}
                     <div 
@@ -587,7 +589,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
                 );
               })
             ) : (
-              <span className="text-slate-400 text-xs">No active accounts found</span>
+              <span className="text-slate-400 text-xs">{t("dash.noAccounts")}</span>
             )}
           </div>
         </div>
@@ -596,9 +598,9 @@ export default function DashboardView({ reports }: DashboardViewProps) {
         <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between col-span-1">
           <div>
             <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 font-display">
-              <DollarSign size={14} className="text-indigo-500" /> Sales & Revenue Stream
+              <DollarSign size={14} className="text-indigo-500" /> {t("dash.salesStream")}
             </h4>
-            <p className="text-[10px] text-slate-400">Analyzing cumulative daily sales</p>
+            <p className="text-[10px] text-slate-400">{t("dash.salesStreamSub")}</p>
           </div>
 
           <div className="h-36 flex items-end justify-between border-b border-l border-slate-150 pb-2 pl-2 relative mt-4 gap-1">
@@ -615,7 +617,7 @@ export default function DashboardView({ reports }: DashboardViewProps) {
                 >
                   {hoveredChartIndex === `rev-${i}` && (
                     <div className="absolute -top-8 bg-slate-900 text-white text-[9px] py-0.5 px-2 rounded shadow-lg z-14 whitespace-nowrap font-mono">
-                      {pt.date}: {formatKZT(pt.revenue)}
+                      {t("dash.salesTooltip", { date: pt.date, revenue: formatKZT(pt.revenue) })}
                     </div>
                   )}
                   <div className="w-full bg-slate-50 group-hover:bg-slate-100 flex items-end transition justify-center" style={{ height: '80px' }}>

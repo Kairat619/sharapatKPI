@@ -9,6 +9,7 @@ import {
   ListFilter
 } from 'lucide-react';
 import { DailyReport, AccountAssignment } from '../types';
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface AccountAnalyticsViewProps {
   reports: DailyReport[];
@@ -20,6 +21,7 @@ export default function AccountAnalyticsView({ reports, assignments }: AccountAn
     assignments[0]?.accountName || 'Шарапат күмістері'
   );
   const [platformFilter, setPlatformFilter] = useState<string>('All');
+  const { t } = useLanguage();
 
   // Filter reports specifically for this account + platform
   const filteredReports = reports.filter(r => {
@@ -56,17 +58,17 @@ export default function AccountAnalyticsView({ reports, assignments }: AccountAn
       {/* Selector & Filters Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
         <div>
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-650">Performance Deep Dive</span>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight mt-0.5 font-display">Account Channel Analytics</h2>
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-650">{t("aa.badge")}</span>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight mt-0.5 font-display">{t("aa.title")}</h2>
           <p className="text-xs text-slate-500">
-            Select a channel below to inspect historical trend logs, reach grids, and qualitative SMM outputs.
+            {t("aa.desc")}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5 font-sans">
           {/* Account Selector */}
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider hidden sm:inline">Channel:</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider hidden sm:inline">{t("aa.channel")}</span>
             <select
               value={selectedAccount}
               onChange={(e) => setSelectedAccount(e.target.value)}
@@ -85,9 +87,9 @@ export default function AccountAnalyticsView({ reports, assignments }: AccountAn
               onChange={(e) => setPlatformFilter(e.target.value)}
               className="p-1.5 text-xs bg-white border border-slate-205 rounded-lg font-bold text-slate-800 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-100"
             >
-              <option value="All">All Platforms</option>
-              <option value="Instagram">Instagram</option>
-              <option value="TikTok">TikTok</option>
+              <option value="All">{t("aa.allPlatforms")}</option>
+              <option value="Instagram">{t("aa.instagram")}</option>
+              <option value="TikTok">{t("aa.tiktok")}</option>
             </select>
           </div>
         </div>
@@ -96,23 +98,23 @@ export default function AccountAnalyticsView({ reports, assignments }: AccountAn
       {currentAssignment && (
         <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-xl flex flex-wrap gap-x-6 gap-y-1.5 text-[11px] text-slate-600 font-sans">
           <div>
-            <span className="text-[9px] font-bold text-slate-400 tracking-wider block uppercase">Assigned Marketer</span>
+            <span className="text-[9px] font-bold text-slate-400 tracking-wider block uppercase">{t("aa.assignedMarketer")}</span>
             <span className="font-extrabold text-slate-800">{currentAssignment.marketer}</span>
           </div>
           <div className="border-l border-slate-200 h-6 hidden sm:block"></div>
           <div>
-            <span className="text-[9px] font-bold text-slate-400 tracking-wider block uppercase">Assigned SMM Specialist</span>
+            <span className="text-[9px] font-bold text-slate-400 tracking-wider block uppercase">{t("aa.assignedSmm")}</span>
             <span className="font-extrabold text-slate-800">{currentAssignment.smm}</span>
           </div>
           <div className="border-l border-slate-200 h-6 hidden sm:block"></div>
           <div>
-            <span className="text-[9px] font-bold text-slate-400 tracking-wider block uppercase">Assigned Videographer</span>
+            <span className="text-[9px] font-bold text-slate-400 tracking-wider block uppercase">{t("aa.assignedVideographer")}</span>
             <span className="font-extrabold text-slate-800">{currentAssignment.videographer}</span>
           </div>
           <div className="border-l border-slate-200 h-6 hidden sm:block"></div>
           <div className="flex items-center">
             <span className="py-0.5 px-2 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded font-bold text-[9px] uppercase font-mono inline-block">
-              Connected
+              {t("aa.connected")}
             </span>
           </div>
         </div>
@@ -122,43 +124,43 @@ export default function AccountAnalyticsView({ reports, assignments }: AccountAn
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="p-3 bg-white border border-slate-205 rounded-xl shadow-sm">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Reach Volume</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t("aa.reachVolume")}</span>
             <Users size={12} className="text-slate-400" />
           </div>
           <h3 className="text-lg font-extrabold text-slate-800 mt-1">{formatCompact(totalReach)}</h3>
-          <p className="text-[9px] text-slate-400 mt-0.5">Sum total channel reach of filtered logs</p>
+          <p className="text-[9px] text-slate-400 mt-0.5">{t("aa.reachSub")}</p>
         </div>
 
         <div className="p-3 bg-white border border-slate-205 rounded-xl shadow-sm">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Video Views</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t("aa.videoViews")}</span>
             <Eye size={12} className="text-slate-400" />
           </div>
           <h3 className="text-lg font-extrabold text-slate-800 mt-1">{formatCompact(totalViews)}</h3>
-          <p className="text-[9px] text-slate-400 mt-0.5">Total combined video viewership</p>
+          <p className="text-[9px] text-slate-400 mt-0.5">{t("aa.viewsSub")}</p>
         </div>
 
         <div className="p-3 bg-white border border-slate-205 rounded-xl shadow-sm">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Leads Generated</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t("aa.leadsGenerated")}</span>
             <PhoneCall size={12} className="text-slate-400" />
           </div>
           <h3 className="text-lg font-extrabold text-slate-800 mt-1">{formatCompact(totalLeads)}</h3>
-          <p className="text-[9px] text-slate-400 mt-0.5">Quantity of SMM messaging inquiries</p>
+          <p className="text-[9px] text-slate-400 mt-0.5">{t("aa.leadsSub")}</p>
         </div>
 
         <div className="p-3 bg-white border border-slate-205 rounded-xl shadow-sm">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Revenue Stream</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t("aa.revenue")}</span>
             <DollarSign size={12} className="text-indigo-650" />
           </div>
           <h3 className="text-lg font-extrabold text-indigo-650 mt-1">{formatKZT(totalRevenue)}</h3>
-          <p className="text-[9px] text-slate-400 mt-0.5">{totalSalesCount} total sales orders closed</p>
+          <p className="text-[9px] text-slate-400 mt-0.5">{t("aa.revenueSub", { count: totalSalesCount })}</p>
         </div>
 
         <div className="p-3 bg-white border border-slate-205 rounded-xl shadow-sm">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Average KPI Index</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t("aa.avgKpi")}</span>
             <Award size={12} className="text-indigo-650" />
           </div>
           <h3 className="text-lg font-extrabold text-slate-800 mt-1">{avgKpi} / 100</h3>
@@ -169,25 +171,25 @@ export default function AccountAnalyticsView({ reports, assignments }: AccountAn
 
         <div className="p-3 bg-white border border-slate-205 rounded-xl shadow-sm">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-505 font-sans">Follower Delta</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-505 font-sans">{t("aa.followerDelta")}</span>
             <TrendingUp size={12} className="text-indigo-600" />
           </div>
           <h3 className={`text-lg font-extrabold mt-1 ${totalFollowerGrowth >= 0 ? 'text-emerald-705' : 'text-rose-600'}`}>
             {totalFollowerGrowth >= 0 ? `+${formatCompact(totalFollowerGrowth)}` : formatCompact(totalFollowerGrowth)}
           </h3>
-          <p className="text-[9px] text-slate-400 mt-0.5 font-sans">Net follower fluctuations compiled</p>
+          <p className="text-[9px] text-slate-400 mt-0.5 font-sans">{t("aa.followerSub")}</p>
         </div>
 
         <div className="p-3 bg-white border border-slate-205 rounded-xl shadow-sm col-span-2 flex flex-col justify-between font-sans">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-505">Active Channel Ratio</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-505">{t("aa.channelRatio")}</span>
           <div className="flex items-center justify-between mt-1 text-xs">
             <div>
-              <span className="block text-slate-400 text-[9px] uppercase font-bold">Instagram Pages</span>
+              <span className="block text-slate-400 text-[9px] uppercase font-bold">{t("aa.instaPages")}</span>
               <span className="font-extrabold text-slate-700">{filteredReports.filter(r => r.platform === 'Instagram').length} registered days</span>
             </div>
             <div className="border-l border-slate-200 h-6 self-center"></div>
             <div>
-              <span className="block text-slate-400 text-[9px] uppercase font-bold">TikTok Streams</span>
+              <span className="block text-slate-400 text-[9px] uppercase font-bold">{t("aa.tiktokStreams")}</span>
               <span className="font-extrabold text-slate-700">{filteredReports.filter(r => r.platform === 'TikTok').length} registered days</span>
             </div>
           </div>
@@ -198,8 +200,8 @@ export default function AccountAnalyticsView({ reports, assignments }: AccountAn
       <div className="bg-white rounded-xl border border-slate-205 shadow-sm overflow-hidden font-sans">
         <div className="p-4 border-b border-slate-100 flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-bold text-slate-905 font-display">Historical Channel Ledger</h3>
-            <p className="text-xs text-slate-400 mt-0.5">Chronological log of submissions matching current channel configuration.</p>
+            <h3 className="text-sm font-bold text-slate-905 font-display">{t("aa.ledgerTitle")}</h3>
+            <p className="text-xs text-slate-400 mt-0.5">{t("aa.ledgerSub")}</p>
           </div>
           <div className="p-2 bg-slate-100 text-slate-500 rounded-lg">
             <ListFilter size={12} />
@@ -210,16 +212,16 @@ export default function AccountAnalyticsView({ reports, assignments }: AccountAn
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 text-[9px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-205">
-                <th className="py-2.5 px-4 animate-fade-in">Date</th>
-                <th className="py-2.5 px-4">Platform</th>
-                <th className="py-2.5 px-4 text-center">Posting</th>
-                <th className="py-2.5 px-4 text-right">Reach</th>
-                <th className="py-2.5 px-4 text-right">Views</th>
-                <th className="py-2.5 px-4 text-right">Leads</th>
-                <th className="py-2.5 px-4 text-right">Stories / Posts</th>
-                <th className="py-2.5 px-4 text-right">Revenue (KZT)</th>
-                <th className="py-2.5 px-4 text-right">KPI Score</th>
-                <th className="py-2.5 px-4 text-center">Status</th>
+                <th className="py-2.5 px-4 animate-fade-in">{t("aa.colDate")}</th>
+                <th className="py-2.5 px-4">{t("aa.colPlatform")}</th>
+                <th className="py-2.5 px-4 text-center">{t("aa.colPosting")}</th>
+                <th className="py-2.5 px-4 text-right">{t("aa.colReach")}</th>
+                <th className="py-2.5 px-4 text-right">{t("aa.colViews")}</th>
+                <th className="py-2.5 px-4 text-right">{t("aa.colLeads")}</th>
+                <th className="py-2.5 px-4 text-right">{t("aa.colStoriesPosts")}</th>
+                <th className="py-2.5 px-4 text-right">{t("aa.colRevenue")}</th>
+                <th className="py-2.5 px-4 text-right">{t("aa.colKpi")}</th>
+                <th className="py-2.5 px-4 text-center">{t("aa.colStatus")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-[11px]">
@@ -255,7 +257,7 @@ export default function AccountAnalyticsView({ reports, assignments }: AccountAn
               {filteredReports.length === 0 && (
                 <tr>
                   <td colSpan={10} className="py-8 text-center text-slate-400 font-medium">
-                    No matching daily performance rows found for this account.
+                    {t("aa.empty")}
                   </td>
                 </tr>
               )}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLanguage } from "../i18n/LanguageContext";
 import { 
   DollarSign, 
   CreditCard, 
@@ -14,12 +15,13 @@ interface RevenueAnalyticsViewProps {
 }
 
 export default function RevenueAnalyticsView({ reports }: RevenueAnalyticsViewProps) {
+  const { t } = useLanguage();
   const [revenueHoverId, setRevenueHoverId] = useState<string | null>(null);
 
   if (reports.length === 0) {
     return (
       <div className="p-8 text-center text-slate-400 bg-white border border-slate-205 rounded-xl font-medium text-xs">
-        Please complete and log daily SMM reports to display compiled revenue analytics.
+        {t("rev.empty")}
       </div>
     );
   }
@@ -82,10 +84,10 @@ export default function RevenueAnalyticsView({ reports }: RevenueAnalyticsViewPr
     <div className="space-y-4 max-w-5xl mx-auto font-sans">
       {/* View Header */}
       <div className="border-b border-slate-205 pb-3">
-        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-650">Financial Intelligence Hub</span>
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight mt-0.5 font-display">Marketing ROI & Revenue</h2>
+        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-650">{t("rev.badge")}</span>
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight mt-0.5 font-display">{t("rev.title")}</h2>
         <p className="text-xs text-slate-500">
-          Executive analytics focusing on marketing profit streams, acquisition cost, and return of advertising spend (ROAS).
+          {t("rev.desc")}
         </p>
       </div>
 
@@ -95,48 +97,48 @@ export default function RevenueAnalyticsView({ reports }: RevenueAnalyticsViewPr
         {/* Total Revenue */}
         <div className="bg-slate-900 text-white p-3 rounded-xl border border-slate-800 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider">Gross SMM Revenue</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider">{t("rev.grossRevenue")}</span>
             <DollarSign size={14} className="text-emerald-400" />
           </div>
           <div className="mt-3">
             <h3 className="text-lg font-extrabold font-sans text-white tracking-tight">{formatKZTCompact(totalRevenue)}</h3>
-            <p className="text-[9px] text-slate-400 mt-0.5">Accumulated from completed social orders</p>
+            <p className="text-[9px] text-slate-400 mt-0.5">{t("rev.grossSub")}</p>
           </div>
         </div>
 
         {/* Orders completd */}
         <div className="bg-white p-3 rounded-xl border border-slate-205 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Orders Count</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t("rev.ordersCount")}</span>
             <ShoppingBag size={14} className="text-indigo-600" />
           </div>
           <div className="mt-3">
             <h3 className="text-lg font-extrabold text-slate-800 tracking-tight">{totalOrders}</h3>
-            <p className="text-[9px] text-slate-400 mt-0.5">SMM direct order checkouts</p>
+            <p className="text-[9px] text-slate-400 mt-0.5">{t("rev.ordersSub")}</p>
           </div>
         </div>
 
         {/* Ad Cost Spent */}
         <div className="bg-white p-3 rounded-xl border border-slate-205 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Advertising Spend</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t("rev.adSpend")}</span>
             <CreditCard size={14} className="text-rose-500" />
           </div>
           <div className="mt-3">
             <h3 className="text-lg font-extrabold text-slate-800 tracking-tight">{formatKZTCompact(totalAdCost)}</h3>
-            <p className="text-[9px] text-rose-500 font-bold mt-0.5">Paid acquisition channels</p>
+            <p className="text-[9px] text-rose-500 font-bold mt-0.5">{t("rev.adSpendSub")}</p>
           </div>
         </div>
 
         {/* ROAS Metric */}
         <div className="bg-white p-3 rounded-xl border border-slate-205 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-400">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Ad Return (ROAS)</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{t("rev.roas")}</span>
             <TrendingUp size={14} className="text-emerald-500" />
           </div>
           <div className="mt-3">
             <h3 className="text-lg font-extrabold text-emerald-700 tracking-tight">{overallRoas.toFixed(2)}x</h3>
-            <p className="text-[9px] text-slate-400 mt-0.5">Sales return ratio per ad budget unit</p>
+            <p className="text-[9px] text-slate-400 mt-0.5">{t("rev.roasSub")}</p>
           </div>
         </div>
 
@@ -145,26 +147,26 @@ export default function RevenueAnalyticsView({ reports }: RevenueAnalyticsViewPr
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Average Order Value (AOV) */}
         <div className="bg-white p-3 rounded-xl border border-slate-205 shadow-sm">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-450 block">Average Order Value (AOV)</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-450 block">{t("rev.aov")}</span>
           <h3 className="text-base font-extrabold text-slate-800 mt-1 font-sans">{formatKZT(avgOrderValue)}</h3>
-          <p className="text-[9px] text-slate-400 mt-0.5">Ticket average amount per conversion</p>
+          <p className="text-[9px] text-slate-400 mt-0.5">{t("rev.aovSub")}</p>
         </div>
 
         {/* SMM Lead-to-Order Conversion Rate */}
         <div className="bg-white p-3 rounded-xl border border-slate-205 shadow-sm">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-450 block">Sales Conversion Rate</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-450 block">{t("rev.convRate")}</span>
           <h4 className="text-base font-extrabold text-slate-800 mt-1 font-sans">{conversionRate.toFixed(1)}%</h4>
-          <p className="text-[9px] text-slate-400 mt-0.5">Inbound leads generating checks</p>
+          <p className="text-[9px] text-slate-400 mt-0.5">{t("rev.convSub")}</p>
         </div>
 
         {/* Best Performing Revenue Account */}
         <div className="bg-white p-3 rounded-xl border border-slate-205 col-span-2 shadow-sm flex flex-col justify-between">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Best Revenue Account Channel</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">{t("rev.bestChannel")}</span>
             <h4 className="text-sm font-extrabold text-slate-800 mt-0.5 truncate">{bestPerformingAccount}</h4>
           </div>
           <p className="text-[10px] text-emerald-700 font-extrabold mt-0.5">
-            Sales: {formatKZT(bestAccountRev)} driven
+            {t("rev.bestChannelValue", { sales: formatKZT(bestAccountRev) })}
           </p>
         </div>
       </div>
@@ -174,9 +176,8 @@ export default function RevenueAnalyticsView({ reports }: RevenueAnalyticsViewPr
         <div className="p-3 bg-yellow-50 border border-yellow-200 text-yellow-905 rounded-xl flex items-start gap-2 text-[11px] leading-relaxed shadow-xs">
           <AlertCircle size={15} className="text-yellow-600 flex-shrink-0 mt-0.5" />
           <div>
-            <span className="font-extrabold block">Ad Return Alert (Low Margin Indicator)</span>
-            Your SMM campaigns are registering an overall ROAS of <strong>{overallRoas.toFixed(2)}x</strong>.
-            This falls below the targeted threshold of 3.0x. Managers should audit SMM creatives or negotiate better ad bids on TikTok & Instagram channels to boost performance.
+            <span className="font-extrabold block">{t("rev.alertTitle")}</span>
+            {t("rev.alertBody", { roas: overallRoas.toFixed(2) })}
           </div>
         </div>
       )}
@@ -185,9 +186,9 @@ export default function RevenueAnalyticsView({ reports }: RevenueAnalyticsViewPr
       <div className="bg-white p-4 rounded-xl border border-slate-205 shadow-sm">
         <div>
           <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5 font-display">
-            <LineChart size={14} className="text-emerald-500" /> Revenue & Marketing Spend Timeline
+            <LineChart size={14} className="text-emerald-500" /> {t("rev.chartTitle")}
           </h4>
-          <p className="text-[11px] text-slate-400 mt-0.5">Compare green bars (Gross SMM Sales) against rose accents (Paid Advertising Cost) over time (last 10 days)</p>
+          <p className="text-[11px] text-slate-400 mt-0.5">{t("rev.chartSub")}</p>
         </div>
 
         <div className="h-48 mt-4 flex items-end justify-between border-b border-l border-slate-200 pb-1.5 pl-1.5 gap-1.5 relative">
@@ -206,9 +207,9 @@ export default function RevenueAnalyticsView({ reports }: RevenueAnalyticsViewPr
                 {/* Tooltip */}
                 {revenueHoverId === pt.date && (
                   <div className="absolute -top-14 bg-slate-900 text-white text-[10px] py-1 px-2.5 rounded-lg shadow-xl z-20 font-mono whitespace-nowrap leading-relaxed text-left border border-slate-850">
-                    <span className="block font-bold text-slate-400 text-[8px]">{pt.date}</span>
-                    <span className="block text-emerald-400">💰 Sales: {formatKZT(pt.revenue)}</span>
-                    <span className="block text-rose-400">💳 Spend: {formatKZT(pt.spend)}</span>
+                    <span className="block font-bold text-slate-400 text-[8px]">{t("rev.chartTooltipDate", { date: pt.date })}</span>
+                    <span className="block text-emerald-400">{t("rev.chartTooltipSales", { sales: formatKZT(pt.revenue) })}</span>
+                    <span className="block text-rose-400">{t("rev.chartTooltipSpend", { spend: formatKZT(pt.spend) })}</span>
                   </div>
                 )}
 

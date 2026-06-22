@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLanguage } from "../i18n/LanguageContext";
 import { 
   Award, 
   Users, 
@@ -23,6 +24,7 @@ interface RankedEmployee {
 }
 
 export default function LeaderboardView({ reports }: LeaderboardViewProps) {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'All' | 'Marketer' | 'SMM Specialist' | 'Videographer'>('All');
 
   // Compute stats for all staff members across reports
@@ -108,9 +110,9 @@ export default function LeaderboardView({ reports }: LeaderboardViewProps) {
   };
 
   const getMedal = (index: number) => {
-    if (index === 0) return { emoji: '🥇 Gold', style: 'bg-amber-50 text-amber-900 border-amber-250 font-extrabold' };
-    if (index === 1) return { emoji: '🥈 Silver', style: 'bg-slate-100 text-slate-800 border-slate-300 font-extrabold' };
-    if (index === 2) return { emoji: '🥉 Bronze', style: 'bg-orange-50 text-orange-950 border-orange-200 font-extrabold' };
+    if (index === 0) return { emoji: `🥇 ${t("lb.gold")}`, style: 'bg-amber-50 text-amber-900 border-amber-250 font-extrabold' };
+    if (index === 1) return { emoji: `🥈 ${t("lb.silver")}`, style: 'bg-slate-100 text-slate-800 border-slate-300 font-extrabold' };
+    if (index === 2) return { emoji: `🥉 ${t("lb.bronze")}`, style: 'bg-orange-50 text-orange-950 border-orange-200 font-extrabold' };
     return { emoji: `${index + 1}`, style: 'bg-slate-50 text-slate-600 border-slate-205 font-bold' };
   };
 
@@ -121,10 +123,10 @@ export default function LeaderboardView({ reports }: LeaderboardViewProps) {
       {/* Header and filters */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
         <div>
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-650">Company Star Ledger</span>
-          <h2 className="text-xl font-bold text-slate-900 tracking-tight mt-0.5 font-display">Employee Leaderboard</h2>
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-indigo-650">{t("lb.badge")}</span>
+          <h2 className="text-xl font-bold text-slate-900 tracking-tight mt-0.5 font-display">{t("lb.title")}</h2>
           <p className="text-xs text-slate-500">
-            Real-time visual ranking comparing SMMs, marketers, and videographers primarily by Average KPI Index.
+            {t("lb.desc")}
           </p>
         </div>
 
@@ -139,7 +141,7 @@ export default function LeaderboardView({ reports }: LeaderboardViewProps) {
                   ? 'bg-white text-slate-900 shadow-xs font-extrabold' 
                   : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50/50'}`}
             >
-              {role === 'All' ? 'All Roles' : `${role}s`}
+              {role === 'All' ? t("lb.allRoles") : `${role}s`}
             </button>
           ))}
         </div>
@@ -147,7 +149,7 @@ export default function LeaderboardView({ reports }: LeaderboardViewProps) {
 
       {reports.length === 0 ? (
         <div className="p-8 text-center text-slate-400 bg-white border border-slate-205 rounded-xl text-xs font-semibold">
-          Please log reports to display employee leaderboard rankings.
+          {t("lb.empty")}
         </div>
       ) : (
         <>
@@ -159,21 +161,21 @@ export default function LeaderboardView({ reports }: LeaderboardViewProps) {
                   ✨
                 </div>
                 <div>
-                  <span className="text-[9px] font-bold text-amber-400 tracking-wider uppercase block">Monthly Star Champion</span>
+                  <span className="text-[9px] font-bold text-amber-400 tracking-wider uppercase block">{t("lb.champion")}</span>
                   <h3 className="text-lg font-extrabold text-white mt-0.5 font-display">{bestPerformer.name}</h3>
                   <p className="text-xs text-slate-400">
-                    Leading the workforce in <span className="text-indigo-400 font-bold">{bestPerformer.department}</span> with an outstanding avg KPI score.
+                    {t("lb.championDesc", { department: bestPerformer.department })}
                   </p>
                 </div>
               </div>
 
               <div className="flex gap-2 text-center">
                 <div className="bg-slate-800/40 border border-slate-700/40 p-2 rounded-lg min-w-24">
-                  <span className="text-[9px] text-slate-400 uppercase tracking-wider block">Average KPI</span>
+                  <span className="text-[9px] text-slate-400 uppercase tracking-wider block">{t("lb.avgKpi")}</span>
                   <span className="text-sm font-black font-sans text-emerald-400">{bestPerformer.avgKpi} pts</span>
                 </div>
                 <div className="bg-slate-800/40 border border-slate-700/40 p-2 rounded-lg min-w-28">
-                  <span className="text-[9px] text-slate-400 uppercase tracking-wider block">Revenue Driven</span>
+                  <span className="text-[9px] text-slate-400 uppercase tracking-wider block">{t("lb.revenue")}</span>
                   <span className="text-sm font-black font-sans text-amber-400">{formatKZT(bestPerformer.revenueGenerated)}</span>
                 </div>
               </div>
@@ -184,8 +186,8 @@ export default function LeaderboardView({ reports }: LeaderboardViewProps) {
           <div className="bg-white rounded-xl border border-slate-205 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center">
               <div>
-                <h3 className="text-sm font-bold text-slate-905 font-display">Ranked Productive Staff Members</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Calculated by averaging individual KPIs registered in target campaigns.</p>
+                <h3 className="text-sm font-bold text-slate-905 font-display">{t("lb.tableTitle")}</h3>
+                <p className="text-xs text-slate-400 mt-0.5">{t("lb.tableSub")}</p>
               </div>
               <div className="p-1.5 bg-slate-100 text-slate-500 rounded-lg">
                 <ListFilter size={12} />
@@ -196,13 +198,13 @@ export default function LeaderboardView({ reports }: LeaderboardViewProps) {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-slate-50 text-[9px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-205">
-                    <th className="py-2.5 px-4 text-center w-24">Rank</th>
-                    <th className="py-2.5 px-4">Name</th>
-                    <th className="py-2.5 px-4">Department</th>
-                    <th className="py-2.5 px-4 text-right">Average KPI</th>
-                    <th className="py-2.5 px-4 text-right">Revenue Generated</th>
-                    <th className="py-2.5 px-4 text-right">Leads Generated</th>
-                    <th className="py-2.5 px-4 text-center w-28">Campaign Days</th>
+                    <th className="py-2.5 px-4 text-center w-24">{t("lb.colRank")}</th>
+                    <th className="py-2.5 px-4">{t("lb.colName")}</th>
+                    <th className="py-2.5 px-4">{t("lb.colDept")}</th>
+                    <th className="py-2.5 px-4 text-right">{t("lb.colAvgKpi")}</th>
+                    <th className="py-2.5 px-4 text-right">{t("lb.colRevenue")}</th>
+                    <th className="py-2.5 px-4 text-right">{t("lb.colLeads")}</th>
+                    <th className="py-2.5 px-4 text-center w-28">{t("lb.colCampaigns")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-[11px]">
@@ -231,7 +233,7 @@ export default function LeaderboardView({ reports }: LeaderboardViewProps) {
                           </span>
                         </td>
                         <td className="py-2 px-4 text-right">
-                          <span className={`${kpiColor} font-mono`}>{emp.avgKpi} / 100</span>
+                          <span className={`${kpiColor} font-mono`}>{t("lb.scoreFormat", { score: emp.avgKpi })}</span>
                         </td>
                         <td className="py-2 px-4 text-right font-mono font-bold text-slate-700">
                           {formatKZT(emp.revenueGenerated)}
