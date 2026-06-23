@@ -713,20 +713,14 @@ export default function DailyReportView({
 
             {/* Primary Action Button */}
             <div className="mt-4">
-              {currentUser.role === 'Viewer' ? (
-                <div className="p-2 bg-slate-800/60 text-slate-400 border border-slate-700/50 rounded-lg text-center text-[10px]">
-                  {t("dr.viewerRestricted")}
-                </div>
-              ) : (
-                <button
-                  type="submit"
-                  className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-lg font-bold text-xs text-white shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
-                  id="btn-save-daily-report"
+              <button
+                type="submit"
+                className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-lg font-bold text-xs text-white shadow-sm transition flex items-center justify-center gap-1.5 cursor-pointer"
+                id="btn-save-daily-report"
                 >
                   <Save size={13} />
                   <span>{t("dr.submitButton")}</span>
                 </button>
-              )}
             </div>
 
           </div>

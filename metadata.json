@@ -1,5 +1,5 @@
 {
-  "name": "Sharapat SMM & Marketing KPI Platform",
+  "name": "Sharapat KPI Platform",
   "description": "An executive KPI management dashboard for content production, sales, marketing, and SMM performance metrics with Google Sheets database templates.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

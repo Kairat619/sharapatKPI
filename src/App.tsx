@@ -11,6 +11,8 @@ import {
   KpiTargets,
   AccountAssignment,
   UserSession,
+  UserRole,
+  RolePasswords,
 } from "./types";
 import {
   DEFAULT_TARGETS,
@@ -19,7 +21,6 @@ import {
 } from "./utils";
 import {
   ShieldCheck,
-  Globe,
   Lock,
   ArrowRight,
 } from "lucide-react";
@@ -29,11 +30,26 @@ export default function App() {
   const { t, lang, setLang } = useLanguage();
   const [currentTab, setCurrentTab] = useState<string>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true); // Logged in by default in Simulator mode
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  const defaultPasswords: RolePasswords = { Admin: "admin", Manager: "manager", Staff: "staff" };
+  const [rolePasswords, setRolePasswords] = useState<RolePasswords>(() => {
+    try {
+      const stored = localStorage.getItem("sharapat_v2_role_passwords");
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    localStorage.setItem("sharapat_v2_role_passwords", JSON.stringify(defaultPasswords));
+    return defaultPasswords;
+  });
+
+  // Login form state
+  const [loginRole, setLoginRole] = useState<UserRole>("Admin");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
 
   // App Session User
   const [user, setUser] = useState<UserSession>({
-    email: "wkz777@gmail.com",
+    email: "admin@sharapat.kz",
     name: "Director Sharapat",
     role: "Admin",
   });
@@ -195,12 +211,6 @@ export default function App() {
 
   // Save updates helper (Pushes to Sheets if URL exists, falls back to offline storage)
   const handleSaveReport = async (newReport: DailyReport) => {
-    // Check role restrictions
-    if (user.role === "Viewer") {
-      alert(t("app.viewerRestricted"));
-      return;
-    }
-
     setSyncState({
       status: "syncing",
       message: t("app.savingReport"),
@@ -322,21 +332,39 @@ export default function App() {
     setIsAuthenticated(false);
   };
 
-  const handleGoogleSignInSimulated = (
-    roleSelected: "Admin" | "Manager" | "Staff" | "Viewer",
-  ) => {
+  const handleLogin = () => {
+    if (!loginPassword.trim()) {
+      setLoginError(t("auth.passwordRequired"));
+      return;
+    }
+    const expected = rolePasswords[loginRole];
+    if (loginPassword !== expected) {
+      setLoginError(t("auth.invalidPassword"));
+      return;
+    }
     setUser({
-      email: "wkz777@gmail.com",
+      email: loginRole === "Staff"
+        ? "staff@sharapat.kz"
+        : loginRole === "Manager"
+          ? "manager@sharapat.kz"
+          : "admin@sharapat.kz",
       name:
-        roleSelected === "Staff"
+        loginRole === "Staff"
           ? "Aidana SMM Lead"
-          : roleSelected === "Manager"
+          : loginRole === "Manager"
             ? "Executive Director"
-            : "Sharapat Owner",
-      role: roleSelected,
+            : "Director Sharapat",
+      role: loginRole,
     });
     setIsAuthenticated(true);
-    setCurrentTab("dashboard");
+    setCurrentTab(loginRole === "Staff" ? "daily-report" : loginRole === "Manager" ? "account-analytics" : "dashboard");
+    setLoginPassword("");
+    setLoginError("");
+  };
+
+  const handleUpdateRolePasswords = (newPasswords: RolePasswords) => {
+    setRolePasswords(newPasswords);
+    localStorage.setItem("sharapat_v2_role_passwords", JSON.stringify(newPasswords));
   };
 
   return (
@@ -357,59 +385,46 @@ export default function App() {
               </p>
             </div>
 
-            <div className="space-y-2 pt-2">
-              <button
-                onClick={() => handleGoogleSignInSimulated("Admin")}
-                className="w-full flex items-center justify-between p-3.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-xl hover:border-indigo-505 text-left transition duration-200 group"
-              >
-                <div>
-                  <span className="block text-xs font-bold text-slate-200">
-                    {t("auth.emailAdmin")}
-                  </span>
-                  <span className="text-[9px] text-indigo-400 font-mono">
-                    {t("auth.signInAdmin")}
-                  </span>
-                </div>
-                <ArrowRight
-                  size={14}
-                  className="text-slate-500 group-hover:text-indigo-400 transition"
+            <div className="space-y-3 pt-2">
+              <div className="text-left">
+                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  {t("auth.selectRole")}
+                </label>
+                <select
+                  value={loginRole}
+                  onChange={(e) => setLoginRole(e.target.value as UserRole)}
+                  className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 font-bold focus:outline-none focus:border-indigo-500 appearance-none cursor-pointer"
+                >
+                  <option value="Admin">{t("auth.roleAdmin")}</option>
+                  <option value="Manager">{t("auth.roleManager")}</option>
+                  <option value="Staff">{t("auth.roleStaff")}</option>
+                </select>
+              </div>
+
+              <div className="text-left">
+                <label className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                  {t("auth.password")}
+                </label>
+                <input
+                  type="password"
+                  value={loginPassword}
+                  onChange={(e) => { setLoginPassword(e.target.value); setLoginError(""); }}
+                  onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                  placeholder={t("auth.passwordPlaceholder")}
+                  className="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-200 font-bold focus:outline-none focus:border-indigo-500 placeholder:text-slate-600"
                 />
-              </button>
+              </div>
+
+              {loginError && (
+                <p className="text-[10px] text-red-400 font-bold text-left">{loginError}</p>
+              )}
 
               <button
-                onClick={() => handleGoogleSignInSimulated("Manager")}
-                className="w-full flex items-center justify-between p-3.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-xl hover:border-indigo-505 text-left transition duration-200 group"
+                onClick={handleLogin}
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-black text-white flex items-center justify-center gap-2 transition cursor-pointer"
               >
-                <div>
-                  <span className="block text-xs font-bold text-slate-200">
-                    {t("auth.emailManager")}
-                  </span>
-                  <span className="text-[9px] text-indigo-400 font-mono">
-                    {t("auth.signInManager")}
-                  </span>
-                </div>
-                <ArrowRight
-                  size={14}
-                  className="text-slate-500 group-hover:text-indigo-400 transition"
-                />
-              </button>
-
-              <button
-                onClick={() => handleGoogleSignInSimulated("Staff")}
-                className="w-full flex items-center justify-between p-3.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-xl hover:border-indigo-505 text-left transition duration-200 group"
-              >
-                <div>
-                  <span className="block text-xs font-bold text-slate-200">
-                    {t("auth.emailStaff")}
-                  </span>
-                  <span className="text-[9px] text-indigo-400 font-mono">
-                    {t("auth.signInStaff")}
-                  </span>
-                </div>
-                <ArrowRight
-                  size={14}
-                  className="text-slate-500 group-hover:text-indigo-400 transition"
-                />
+                <ArrowRight size={14} />
+                {t("auth.signIn")}
               </button>
             </div>
 
@@ -532,6 +547,8 @@ export default function App() {
                   setSheetUrl={setSheetUrl}
                   syncState={syncState}
                   onPullData={() => handlePullData(sheetUrl)}
+                  rolePasswords={rolePasswords}
+                  onUpdateRolePasswords={handleUpdateRolePasswords}
                 />
               )}
             </main>

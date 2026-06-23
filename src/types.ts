@@ -1,9 +1,15 @@
-export type UserRole = 'Admin' | 'Manager' | 'Staff' | 'Viewer';
+export type UserRole = 'Admin' | 'Manager' | 'Staff';
 
 export interface UserSession {
   email: string;
   name: string;
   role: UserRole;
+}
+
+export interface RolePasswords {
+  Admin: string;
+  Manager: string;
+  Staff: string;
 }
 
 export interface KpiTargets {

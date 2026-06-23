@@ -3,8 +3,7 @@ import { useLanguage } from "../i18n/LanguageContext";
 import {
   Download,
   Printer,
-  User,
-  ShieldAlert,
+  KeyRound,
   Copy,
   Sparkles,
   Check,
@@ -12,6 +11,7 @@ import {
   Sliders,
   Database,
   RotateCw,
+  Save,
 } from "lucide-react";
 import {
   KpiTargets,
@@ -19,6 +19,7 @@ import {
   UserSession,
   DailyReport,
   UserRole,
+  RolePasswords,
 } from "../types";
 import { getAppsScriptCode } from "../utils";
 
@@ -37,6 +38,8 @@ interface ExportSettingsViewProps {
     message: string;
   };
   onPullData: () => void;
+  rolePasswords: RolePasswords;
+  onUpdateRolePasswords: (passwords: RolePasswords) => void;
 }
 
 export default function ExportSettingsView({
@@ -51,11 +54,23 @@ export default function ExportSettingsView({
   setSheetUrl,
   syncState,
   onPullData,
+  rolePasswords,
+  onUpdateRolePasswords,
 }: ExportSettingsViewProps) {
   const { t } = useLanguage();
 
   // Roles list
-  const roles: UserRole[] = ["Admin", "Manager", "Staff", "Viewer"];
+  const roles: UserRole[] = ["Admin", "Manager", "Staff"];
+
+  // Password manager state
+  const [localPasswords, setLocalPasswords] = useState<RolePasswords>(rolePasswords);
+  const [passwordsSaved, setPasswordsSaved] = useState(false);
+
+  const handleSavePasswords = () => {
+    onUpdateRolePasswords(localPasswords);
+    setPasswordsSaved(true);
+    setTimeout(() => setPasswordsSaved(false), 3000);
+  };
 
   // Settings edit states
   const [targetLeads, setTargetLeads] = useState(targets.leads);
@@ -404,60 +419,43 @@ export default function ExportSettingsView({
             </div>
           </div>
 
-          {/* Role management switcher card */}
-          <div className="bg-white p-4 rounded-xl border border-slate-205 shadow-sm space-y-3">
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-2">
-              <User size={13} className="text-indigo-650" /> {t("es.roleSwitcher")}
-            </h3>
-
-            <p className="text-[11px] text-slate-500 leading-relaxed">
-              {t("es.roleDesc")}
-            </p>
-
-            <div className="grid grid-cols-2 gap-1.5">
-              {roles.map((role) => (
-                <button
-                  key={role}
-                  onClick={() => setCurrentUser({ ...currentUser, role })}
-                  className={`p-1.5 rounded-lg text-xs font-extrabold transition text-center border cursor-pointer
-                    ${
-                      currentUser.role === role
-                        ? "bg-slate-900 text-white border-slate-950 font-black shadow-xs"
-                        : "bg-slate-50 text-slate-600 border-slate-201 hover:bg-slate-100"
-                    }`}
-                >
-                  {t("role." + role)}
-                </button>
+          {/* Role Password Manager (Admin only) */}
+          {currentUser.role === "Admin" && (
+            <div className="bg-white p-4 rounded-xl border border-slate-205 shadow-sm space-y-3">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5 border-b border-slate-100 pb-2">
+                <KeyRound size={13} className="text-indigo-650" /> {t("es.passwordManager")}
+              </h3>
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                {t("es.passwordDesc")}
+              </p>
+              {[["Admin", t("es.adminPassword")], ["Manager", t("es.managerPassword")], ["Staff", t("es.staffPassword")]].map(([role, label]) => (
+                <div key={role}>
+                  <label className="block text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">
+                    {label}
+                  </label>
+                  <input
+                    type="password"
+                    value={localPasswords[role as UserRole] || ""}
+                    onChange={(e) => setLocalPasswords({ ...localPasswords, [role]: e.target.value })}
+                    className="w-full text-xs p-2.5 border border-slate-250 bg-white text-slate-805 rounded-lg focus:outline-none focus:border-indigo-550 focus:ring-1 focus:ring-indigo-100 font-mono"
+                    placeholder="••••••••"
+                  />
+                </div>
               ))}
+              {passwordsSaved && (
+                <div className="p-2 bg-emerald-50 text-emerald-800 border border-emerald-150 text-[11px] font-bold rounded-lg flex items-center gap-1.5">
+                  <Sparkles size={12} className="text-emerald-500" /> {t("es.passwordSaved")}
+                </div>
+              )}
+              <button
+                onClick={handleSavePasswords}
+                className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-1.5 shadow-xs transition cursor-pointer"
+              >
+                <Save size={12} />
+                <span>{t("es.passwordSave")}</span>
+              </button>
             </div>
-
-            <div className="p-2.5 bg-indigo-50/50 border border-indigo-100 rounded-lg text-[10px] text-indigo-900 leading-relaxed space-y-1">
-              <span className="font-bold flex items-center gap-1">
-                <ShieldAlert size={11} className="text-indigo-650" />
-                {t("es.activePermissions")}
-              </span>
-              {currentUser.role === "Admin" && (
-                <span className="block text-[9px] text-indigo-950 font-bold">
-                  {t("es.adminPerms")}
-                </span>
-              )}
-              {currentUser.role === "Manager" && (
-                <span className="block text-[9px] text-indigo-950 font-bold font-medium">
-                  {t("es.managerPerms")}
-                </span>
-              )}
-              {currentUser.role === "Staff" && (
-                <span className="block text-[9px] text-[10px] text-indigo-950 font-bold font-medium">
-                  {t("es.staffPerms")}
-                </span>
-              )}
-              {currentUser.role === "Viewer" && (
-                <span className="block text-[9px] text-slate-600 font-bold font-medium">
-                  {t("es.viewerPerms")}
-                </span>
-              )}
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Column Right: Settings targets */}
@@ -566,7 +564,7 @@ export default function ExportSettingsView({
             </div>
 
             <div className="pt-2 text-right">
-              {currentUser.role === "Staff" || currentUser.role === "Viewer" ? (
+              {currentUser.role === "Staff" ? (
                 <span className="text-[10px] text-slate-400 font-bold font-mono">
                   {t("es.restricted")}
                 </span>
