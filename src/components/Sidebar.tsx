@@ -33,7 +33,7 @@ export default function Sidebar({
   const { t } = useLanguage();
   const tabs = [
     { id: 'dashboard', name: t('nav.dashboard'), icon: LayoutDashboard, roles: ['Admin'] as UserRole[] },
-    { id: 'daily-report', name: t('nav.dailyReport'), icon: FileSpreadsheet, roles: ['Admin', 'Staff'] as UserRole[] },
+    { id: 'daily-report', name: t('nav.dailyReport'), icon: FileSpreadsheet, roles: ['Admin', 'Manager', 'Staff'] as UserRole[] },
     { id: 'account-analytics', name: t('nav.accountAnalytics'), icon: TrendingUp, roles: ['Admin', 'Manager'] as UserRole[] },
     { id: 'leaderboard', name: t('nav.leaderboard'), icon: Award, roles: ['Admin', 'Manager'] as UserRole[] },
     { id: 'revenue', name: t('nav.revenue'), icon: Wallet, roles: ['Admin', 'Manager'] as UserRole[] },
