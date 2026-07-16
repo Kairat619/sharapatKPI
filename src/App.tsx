@@ -18,6 +18,7 @@ import {
   DEFAULT_TARGETS,
   DEFAULT_ASSIGNMENTS,
   generateSeedReports,
+  fetchWithRetry,
 } from "./utils";
 import {
   ShieldCheck,
@@ -134,11 +135,7 @@ export default function App() {
       message: t("app.fetchingReports"),
     });
     try {
-      const response = await fetch(`${urlToUse}?action=getReports`, {
-        redirect: "follow",
-      });
-      if (!response.ok)
-        throw new Error(`HTTP Error Status: ${response.status}`);
+      const response = await fetchWithRetry(`${urlToUse}?action=getReports`);
       const data = await response.json();
 
       if (data && Array.isArray(data)) {
@@ -191,9 +188,7 @@ export default function App() {
       }
 
       // Fetch accompanying KPI targets configurations
-      const targetResp = await fetch(`${urlToUse}?action=getTargets`, {
-        redirect: "follow",
-      });
+      const targetResp = await fetchWithRetry(`${urlToUse}?action=getTargets`);
       if (targetResp.ok) {
         const tObj = await targetResp.json();
         if (tObj && !tObj.error) {
@@ -243,9 +238,8 @@ export default function App() {
 
     if (sheetUrl) {
       try {
-        const response = await fetch(sheetUrl, {
+        const response = await fetchWithRetry(sheetUrl, {
           method: "POST",
-          redirect: "follow",
           body: JSON.stringify({
             action: "submitReport",
             report: newReport,
@@ -253,8 +247,6 @@ export default function App() {
           }),
         });
 
-        if (!response.ok)
-          throw new Error(`HTTP Error Status: ${response.status}`);
         const result = await response.json();
 
         if (result && result.success) {
@@ -311,27 +303,22 @@ export default function App() {
         message: t("app.syncingTargets"),
       });
       try {
-        const response = await fetch(sheetUrl, {
+        const response = await fetchWithRetry(sheetUrl, {
           method: "POST",
-          redirect: "follow",
           body: JSON.stringify({
             action: "updateTargets",
             targets: newTargets,
             userEmail: user.email,
           }),
         });
-        if (response.ok) {
-          const res = await response.json();
-          if (res && res.success) {
-            setSyncState({
-              status: "success",
-              message: t("app.targetsSynced"),
-            });
-          } else {
-            throw new Error(res.error || "sheet returned error status");
-          }
+        const res = await response.json();
+        if (res && res.success) {
+          setSyncState({
+            status: "success",
+            message: t("app.targetsSynced"),
+          });
         } else {
-          throw new Error("network response error");
+          throw new Error(res.error || "sheet returned error status");
         }
       } catch (e: any) {
         setSyncState({

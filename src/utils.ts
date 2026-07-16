@@ -1,5 +1,52 @@
 import { DailyReport, KpiTargets, AccountAssignment, AuditLog, UserRole } from './types';
 
+// Retry-capable fetch wrapper for Google Apps Script Web Apps
+// Handles cold starts (10-30s), network hiccups, and transient 5xx errors
+export async function fetchWithRetry(
+  url: string,
+  options: RequestInit = {},
+  maxRetries: number = 3,
+  timeoutMs: number = 30000,
+): Promise<Response> {
+  let lastError: Error | undefined;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+        redirect: 'follow',
+      });
+      clearTimeout(timer);
+
+      // Don't retry on 4xx client errors (except 408 timeout)
+      if (response.ok || (response.status >= 400 && response.status < 500 && response.status !== 408)) {
+        return response;
+      }
+
+      // Retry on 5xx server errors (cold start, overload)
+      lastError = new Error(`HTTP ${response.status}`);
+    } catch (err: any) {
+      lastError = err;
+      // Don't retry if the user aborted the page
+      if (err.name === 'AbortError' && !options.signal) {
+        // Abort was from our timeout, not user — continue retrying
+      }
+    }
+
+    // Exponential backoff: 1s, 2s, 4s between retries
+    if (attempt < maxRetries) {
+      const delay = Math.min(1000 * Math.pow(2, attempt), 8000);
+      await new Promise((r) => setTimeout(r, delay));
+    }
+  }
+
+  throw lastError || new Error('fetchWithRetry failed after retries');
+}
+
 // Default targets for KPI calculation
 export const DEFAULT_TARGETS: KpiTargets = {
   leads: 30,
