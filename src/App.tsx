@@ -30,7 +30,13 @@ export default function App() {
   const { t, lang, setLang } = useLanguage();
   const [currentTab, setCurrentTab] = useState<string>("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem("sharapat_v2_authenticated") === "true";
+    } catch {
+      return false;
+    }
+  });
 
   const defaultPasswords: RolePasswords = { Admin: "admin", Manager: "manager", Staff: "staff" };
   const [rolePasswords, setRolePasswords] = useState<RolePasswords>(() => {
@@ -48,10 +54,16 @@ export default function App() {
   const [loginError, setLoginError] = useState("");
 
   // App Session User
-  const [user, setUser] = useState<UserSession>({
-    email: "admin@sharapat.kz",
-    name: "Director Sharapat",
-    role: "Admin",
+  const [user, setUser] = useState<UserSession>(() => {
+    try {
+      const stored = localStorage.getItem("sharapat_v2_user");
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return {
+      email: "admin@sharapat.kz",
+      name: "Director Sharapat",
+      role: "Admin",
+    };
   });
 
   // State management for reports, targets, assignments
@@ -105,6 +117,14 @@ export default function App() {
       } catch (e) {}
     }
   }, []);
+
+  // Persist auth state to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("sharapat_v2_authenticated", String(isAuthenticated));
+      localStorage.setItem("sharapat_v2_user", JSON.stringify(user));
+    } catch {}
+  }, [isAuthenticated, user]);
 
   // Fetch / Sync live reports from Google Sheets
   const handlePullData = async (urlToUse: string = sheetUrl) => {
@@ -330,6 +350,10 @@ export default function App() {
   // Sign out handler (takes them back to styled Google login screen)
   const handleLogout = () => {
     setIsAuthenticated(false);
+    try {
+      localStorage.removeItem("sharapat_v2_authenticated");
+      localStorage.removeItem("sharapat_v2_user");
+    } catch {}
   };
 
   const handleLogin = () => {
